@@ -16,12 +16,7 @@ const menuItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "Events", url: "/events", icon: Calendar },
   { title: "Participants", url: "/participants", icon: Users },
-  { title: "Results", url: "/results", icon: Trophy },
-  { title: "Hardware", url: "/hardware", icon: HardDrive },
-  { title: "Live Tracking", url: "/tracking", icon: Activity },
   { title: "Reports", url: "/reports", icon: FileText },
-  { title: "Messages", url: "/messages", icon: MessageSquare },
-  { title: "Audit Log", url: "/audit", icon: History },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
