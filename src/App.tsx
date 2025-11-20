@@ -6,8 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 import Participants from "./pages/Participants";
-import Results from "./pages/Results";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -23,14 +23,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/participants" element={<Participants />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/hardware" element={<div className="p-6"><h1 className="text-2xl font-bold">Hardware Inventory</h1><p className="text-muted-foreground mt-2">Coming soon...</p></div>} />
-            <Route path="/tracking" element={<div className="p-6"><h1 className="text-2xl font-bold">Live Tracking</h1><p className="text-muted-foreground mt-2">Coming soon...</p></div>} />
             <Route path="/reports" element={<div className="p-6"><h1 className="text-2xl font-bold">Reports & Exports</h1><p className="text-muted-foreground mt-2">Coming soon...</p></div>} />
-            <Route path="/messages" element={<div className="p-6"><h1 className="text-2xl font-bold">Messages</h1><p className="text-muted-foreground mt-2">Coming soon...</p></div>} />
-            <Route path="/audit" element={<div className="p-6"><h1 className="text-2xl font-bold">Audit Log</h1><p className="text-muted-foreground mt-2">Coming soon...</p></div>} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

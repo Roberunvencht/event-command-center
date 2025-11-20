@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,8 +11,40 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Events() {
+  const navigate = useNavigate();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    name: "",
+    date: "",
+    distance: "",
+    device: "",
+  });
+
+  const handleCreateEvent = () => {
+    // Handle event creation logic here
+    console.log("Creating event:", newEvent);
+    setIsCreateDialogOpen(false);
+    setNewEvent({ name: "", date: "", distance: "", device: "" });
+  };
+
   const events = [
     {
       id: 1,
@@ -48,10 +82,71 @@ export default function Events() {
           <h1 className="text-3xl font-bold text-foreground mb-2">Events</h1>
           <p className="text-muted-foreground">Manage all your race events</p>
         </div>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Create Event
-        </Button>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              Create Event
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Event</DialogTitle>
+              <DialogDescription>
+                Fill in the details to create a new running event.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Event Name</Label>
+                <Input
+                  id="name"
+                  placeholder="e.g., City Marathon 2024"
+                  value={newEvent.name}
+                  onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date">Date</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newEvent.date}
+                  onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="distance">Distance (km)</Label>
+                <Input
+                  id="distance"
+                  type="number"
+                  placeholder="e.g., 42.2"
+                  value={newEvent.distance}
+                  onChange={(e) => setNewEvent({ ...newEvent, distance: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="device">Device Type</Label>
+                <Select value={newEvent.device} onValueChange={(value) => setNewEvent({ ...newEvent, device: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select device type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rfid">RFID</SelectItem>
+                    <SelectItem value="running-node">Running Node</SelectItem>
+                    <SelectItem value="hybrid">Hybrid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleCreateEvent}>Create Event</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
@@ -95,7 +190,13 @@ export default function Events() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">View Details</Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate(`/events/${event.id}`)}
+                  >
+                    View Details
+                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
