@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import Participants from "./pages/Participants";
+import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import ClientHome from "./pages/client/Home";
@@ -32,7 +33,7 @@ const App = () => (
           <Route path="/events" element={<Layout><Events /></Layout>} />
           <Route path="/events/:id" element={<Layout><EventDetail /></Layout>} />
           <Route path="/participants" element={<Layout><Participants /></Layout>} />
-          <Route path="/reports" element={<Layout><div className="p-6"><h1 className="text-2xl font-bold">Reports & Exports</h1><p className="text-muted-foreground mt-2">Coming soon...</p></div></Layout>} />
+          <Route path="/reports" element={<Layout><Reports /></Layout>} />
           <Route path="/settings" element={<Layout><Settings /></Layout>} />
           
           {/* Client Routes */}
