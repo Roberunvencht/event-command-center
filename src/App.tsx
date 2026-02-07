@@ -18,6 +18,8 @@ import ClientEventDetail from "./pages/client/EventDetail";
 import RaceParticipation from "./pages/client/RaceParticipation";
 import Leaderboard from "./pages/client/Leaderboard";
 import Profile from "./pages/client/Profile";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
           {/* Admin Routes */}
           <Route path="/" element={<Layout><Dashboard /></Layout>} />
           <Route path="/events" element={<Layout><Events /></Layout>} />
