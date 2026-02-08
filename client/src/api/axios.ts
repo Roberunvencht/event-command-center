@@ -4,8 +4,13 @@ import { navigate } from '@/lib/navigate';
 
 const UNAUTHORIZED = 401;
 
+// TODO: Move to .env
+// this is temporary
+export const VITE_API_URL = 'http://localhost:3000/api/v1';
+
 const options: CreateAxiosDefaults = {
-	baseURL: import.meta.env.VITE_API_URL,
+	// baseURL: import.meta.env.VITE_API_URL,
+	baseURL: VITE_API_URL,
 	withCredentials: true,
 };
 

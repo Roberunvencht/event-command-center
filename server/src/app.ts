@@ -11,7 +11,6 @@ import { healthcheck } from './middlewares/healthcheck';
 import { corsOptions } from './utils/cors';
 import { auth } from './middlewares/auth';
 import { NODE_ENV, PORT } from './constant/env';
-
 connectToMongoDB();
 
 const app = express();

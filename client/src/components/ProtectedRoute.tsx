@@ -14,6 +14,7 @@ export default function ProtectedRoute({ children }: PropsWithChildren) {
 			try {
 				const { data } = await axiosInstance.post<User>('/auth/token/verify');
 				setUser(data);
+				console.log(data);
 				setIsAuthenticated(true);
 			} catch (err: any) {
 				setIsAuthenticated(false);

@@ -1,8 +1,8 @@
 import express from 'express';
 import {
 	forgotPasswordHandler,
-	googleCalendarCallbackHandler,
-	googleCalendarLoginHandler,
+	googleCallbackHandler,
+	googleLoginHandler,
 	loginHandler,
 	logoutHandler,
 	recaptchaVerify,
@@ -26,9 +26,9 @@ router.get('/refresh', refreshTokenHandler);
 
 router.post('/recaptcha/verify', recaptchaVerify);
 
-router.get('/google-calendar', googleCalendarLoginHandler);
+router.get('/google-calendar', googleLoginHandler);
 
-router.get('/google-calendar/callback', googleCalendarCallbackHandler);
+router.get('/google-calendar/callback', googleCallbackHandler);
 
 router.post('/forgot-password', forgotPasswordHandler);
 

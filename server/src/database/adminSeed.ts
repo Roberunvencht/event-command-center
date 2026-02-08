@@ -4,7 +4,6 @@ import UserModel from '../models/user.model';
 interface AdminSeedOptions {
 	name: string;
 	email: string;
-	institutionalID: string;
 	password: string;
 }
 
@@ -26,6 +25,7 @@ export const seedAdmin = async (options: AdminSeedOptions) => {
 			email: options.email,
 			password: hashedPassword,
 			googleID: '',
+			role: 'admin',
 		});
 
 		console.log('Admin account created:', admin.email);

@@ -2,10 +2,13 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+export type Role = 'admin' | 'user';
+
 export interface IUser extends mongoose.Document {
 	name: string;
 	email: string;
 	password: string;
+	role: Role;
 	profilePicture?: string;
 	resetPasswordToken?: string;
 	resetPasswordExpires?: Date | undefined;
@@ -23,6 +26,7 @@ const UserSchema = new Schema<IUser>(
 		password: { type: String, required: true },
 		profilePicture: { type: String, required: false },
 		resetPasswordToken: { type: String, required: false },
+		role: { type: String, required: true, default: 'user' },
 		resetPasswordExpires: { type: Date, required: false },
 		googleID: { type: String },
 		archived: { type: Boolean, required: true, default: false },

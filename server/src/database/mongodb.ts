@@ -10,7 +10,6 @@ export default async function connectToMongoDB(): Promise<void> {
 		await seedAdmin({
 			name: 'Admin User',
 			email: ADMIN_EMAIL,
-			institutionalID: 'admin001',
 			password: ADMIN_PASSWORD,
 		});
 	} catch (err: any) {

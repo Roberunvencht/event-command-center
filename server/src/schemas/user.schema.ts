@@ -12,26 +12,14 @@ const strongPasswordMessage =
 
 export const createUserSchema = z
 	.object({
-		name: z.string().min(1, 'Full name is required'),
-		institutionalID: z.string().min(1, 'Institutional ID is required'),
-		email: z.email('Invalid email'),
+		name: z.string().min(2, 'First name must be at least 2 characters'),
+		email: z.string().email('Please enter a valid email address'),
 		password: z
 			.string()
 			.min(8, 'Password must be at least 8 characters')
-			.superRefine((val, ctx) => {
-				const errors = validatePassword(val);
-				if (errors.length > 0) {
-					errors.forEach((err) =>
-						ctx.addIssue({
-							code: z.ZodIssueCode.custom,
-							message: err,
-						}),
-					);
-				}
-			}),
-		confirmPassword: z
-			.string()
-			.min(8, 'Password must be at least 8 characters'),
+			.regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+			.regex(/[0-9]/, 'Password must contain at least one number'),
+		confirmPassword: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		message: 'Passwords do not match',

@@ -3,9 +3,12 @@ import bcrypt from 'bcryptjs';
 import CustomResponse from '../utils/response';
 import appAssert from '../errors/app-assert';
 import { createUserSchema, loginSchema } from '../schemas/user.schema';
+import { oAuth2Client } from '../services/google-client';
+import { sendMail } from '../services/email';
+import { AppErrorCodes } from '../constant';
+import { google } from 'googleapis';
 import SessionModel from '../models/session.model';
 import UserModel from '../models/user.model';
-
 import {
 	generateCypto,
 	getPasswordResetEmailTemplate,
@@ -36,9 +39,6 @@ import {
 	OK,
 	UNAUTHORIZED,
 } from '../constant/http';
-
-import { loginService, signupService } from '../services/auth';
-import z from 'zod';
 import {
 	ACCESS_TOKEN_COOKIE_NAME,
 	BCRYPT_SALT,
@@ -47,19 +47,14 @@ import {
 	JWT_REFRESH_SECRET_KEY,
 	REFRESH_TOKEN_COOKIE_NAME,
 } from '../constant/env';
-import { AppErrorCodes } from '../constant';
-import { sendMail } from '../services/email';
-import { oAuth2Client } from '../services/google-client';
-import { google } from 'googleapis';
+import { loginService, signupService } from '../services/auth';
 
 /**
  * @route POST /api/v1/auth/login - Login
  */
 export const loginHandler = asyncHandler(async (req, res) => {
 	const body = loginSchema.parse(req.body);
-	const user = await UserModel.findOne({ email: body.email })
-		.populate('adminRole')
-		.exec();
+	const user = await UserModel.findOne({ email: body.email }).exec();
 
 	// Check if user exists
 	appAssert(user, UNAUTHORIZED, 'Incorrect email or password');
@@ -82,11 +77,6 @@ export const signupHandler = asyncHandler(async (req, res) => {
 	// check for duplicate email
 	const existingUser = await UserModel.findOne({ email: body.email });
 	appAssert(!existingUser, CONFLICT, 'Email already used');
-
-	const sameInstitutionalID = await UserModel.findOne({
-		institutionalID: body.institutionalID,
-	});
-	appAssert(!sameInstitutionalID, CONFLICT, 'Institutional ID already used');
 
 	// Check if passwords match
 	appAssert(
@@ -123,6 +113,8 @@ export const logoutHandler = asyncHandler(async (req, res) => {
 		...cookieOptions,
 		path: REFRESH_PATH,
 	});
+
+	res.json(new CustomResponse(true, null, 'Logout successful'));
 });
 
 /**
@@ -207,9 +199,7 @@ export const verifyAuthHandler = asyncHandler(async (req, res) => {
 		AppErrorCodes.InvalidAccessToken,
 	);
 
-	const user = await UserModel.findById(payload.userID as string).populate(
-		'adminRole',
-	);
+	const user = await UserModel.findById(payload.userID as string);
 	const session = await SessionModel.findById(payload.sessionID);
 
 	appAssert(
@@ -311,9 +301,9 @@ export const resetPasswordHandler = asyncHandler(async (req, res) => {
 /**
  * @route GET /api/v1/auth/google-calendar
  */
-export const googleCalendarLoginHandler = asyncHandler(async (req, res) => {
+export const googleLoginHandler = asyncHandler(async (req, res) => {
 	const scopes = [
-		'https://www.googleapis.com/auth/calendar.events',
+		// 'https://www.googleapis.com/auth/calendar.events',
 		'https://www.googleapis.com/auth/userinfo.profile',
 		'https://www.googleapis.com/auth/userinfo.email',
 		'openid',
@@ -331,7 +321,7 @@ export const googleCalendarLoginHandler = asyncHandler(async (req, res) => {
 /**
  * @route GET /api/v1/auth/google-calendar/callback
  */
-export const googleCalendarCallbackHandler = asyncHandler(async (req, res) => {
+export const googleCallbackHandler = asyncHandler(async (req, res) => {
 	const code = req.query.code as string;
 	appAssert(code, BAD_REQUEST, 'No code provided');
 
@@ -359,7 +349,6 @@ export const googleCalendarCallbackHandler = asyncHandler(async (req, res) => {
 			const randomPassword = crypto.randomUUID() + 'A1!';
 			const userInfo = createUserSchema.parse({
 				name: googleUser.name,
-				institutionalID: googleUser.email?.split('@')[0],
 				email: googleUser.email,
 				password: randomPassword,
 				confirmPassword: randomPassword,
@@ -372,8 +361,8 @@ export const googleCalendarCallbackHandler = asyncHandler(async (req, res) => {
 		}
 	}
 
-	// Save tokens to user
-	user.googleCalendarTokens = tokens;
+	// Update googleID
+	user.googleID = googleUser.email ?? '';
 	await user.save();
 
 	await loginService(req, res, user);

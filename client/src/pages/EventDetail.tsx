@@ -823,7 +823,7 @@ export default function EventDetail() {
 	);
 
 	return (
-		<div className='space-y-6'>
+		<div className='space-y-6 animate-appear'>
 			<div>
 				<h1 className='text-3xl font-bold text-foreground mb-2'>
 					{event.name}
