@@ -1,0 +1,43 @@
+import { NOT_FOUND } from '../constant/http';
+import appAssert from '../errors/app-assert';
+import EventModel from '../models/event.model';
+import { createEventSchema } from '../schemas/event.schema';
+import CustomResponse from '../utils/response';
+import { asyncHandler } from '../utils/utils';
+
+/**
+ * @route POST /api/v1/event
+ */
+export const createEventHandler = asyncHandler(async (req, res) => {
+	const body = createEventSchema.parse(req.body);
+
+	const filteredBody = Object.fromEntries(
+		Object.entries(body).filter(([, value]) => value !== undefined),
+	);
+
+	const event = await EventModel.create(filteredBody);
+
+	res.json(new CustomResponse(true, event, 'Event created successfully'));
+});
+
+/**
+ * @route GET /api/v1/event
+ */
+export const getEventsHandler = asyncHandler(async (req, res) => {
+	const events = await EventModel.find();
+
+	res.json(new CustomResponse(true, events, 'Events fetched successfully'));
+});
+
+/**
+ * @route GET /api/v1/event/:eventID
+ */
+
+export const getSingleEventHandler = asyncHandler(async (req, res) => {
+	const { eventID } = req.params;
+
+	const event = await EventModel.findById(eventID);
+	appAssert(event, NOT_FOUND, 'Event not found');
+
+	res.json(new CustomResponse(true, event, 'Event fetched successfully'));
+});

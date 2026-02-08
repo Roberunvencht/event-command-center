@@ -21,13 +21,12 @@ app.use(cookieParser());
 app.get('/', healthcheck);
 
 import authRoutes from './routes/auth.route';
+import eventsRoutes from './routes/event.routes';
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/event', eventsRoutes);
 app.use(auth);
-app.use('/private', (req, res) => {
-	res.json({ message: 'Private route' });
-});
 
 // Error handlers
 app.use(notFoundHandler);

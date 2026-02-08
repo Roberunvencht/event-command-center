@@ -1,6 +1,9 @@
 import { Request } from 'express';
 import crypto from 'crypto';
 import { HASH_ALGORITHM, HASH_ENCODING } from '../constant';
+import expressAsyncHandler from 'express-async-handler';
+
+export const asyncHandler = expressAsyncHandler;
 
 export const getUserRequestInfo = (req: Request) => {
 	const xforwarded = req.headers['x-forwarded-for'];

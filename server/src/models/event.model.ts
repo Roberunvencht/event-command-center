@@ -1,0 +1,98 @@
+import { Schema, model, Types } from 'mongoose';
+
+export type EventStatus = 'upcoming' | 'active' | 'finished';
+
+export type RaceCategory = {
+	name: string;
+	distanceKm: number;
+	cutoffTime: number; // minutes
+	gunStartTime: Date;
+	price: number;
+	slots: number;
+	registeredCount: number;
+};
+
+export type Event = {
+	name: string;
+	description: string;
+	status: EventStatus;
+	date: Date;
+	startTime: string;
+	endTime: string;
+	location: {
+		venue: string;
+		city: string;
+		province: string;
+		country: string;
+		coordinates: {
+			lat: number;
+			lng: number;
+		};
+	};
+	raceCategories: RaceCategory[];
+	registration: {
+		isOpen: boolean;
+		opensAt: Date;
+		closesAt: Date;
+	};
+	capacity: {
+		totalSlots: number;
+		registeredCount: number;
+	};
+	createdAt: Date;
+	updatedAt: Date;
+};
+
+const RaceCategorySchema = new Schema<RaceCategory>({
+	name: { type: String, required: true },
+	distanceKm: { type: Number, required: true },
+	cutoffTime: { type: Number, required: true }, // minutes
+	gunStartTime: { type: Date },
+	price: { type: Number, required: true },
+	slots: { type: Number, required: true },
+	registeredCount: { type: Number, default: 0 },
+});
+
+const EventSchema = new Schema<Event>(
+	{
+		name: { type: String, required: true },
+		description: String,
+		status: {
+			type: String,
+			enum: ['upcoming', 'active', 'finished'],
+			default: 'upcoming',
+		},
+
+		date: { type: Date, required: true },
+		startTime: String,
+		endTime: String,
+
+		location: {
+			venue: String,
+			city: String,
+			province: String,
+			country: { type: String, default: 'Philippines' },
+			coordinates: {
+				lat: Number,
+				lng: Number,
+			},
+		},
+
+		raceCategories: [RaceCategorySchema],
+
+		registration: {
+			isOpen: { type: Boolean, default: false },
+			opensAt: Date,
+			closesAt: Date,
+		},
+
+		capacity: {
+			totalSlots: Number,
+			registeredCount: { type: Number, default: 0 },
+		},
+	},
+	{ timestamps: true },
+);
+
+const EventModel = model('Event', EventSchema);
+export default EventModel;

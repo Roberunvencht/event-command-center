@@ -1,87 +1,51 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { StatusBadge } from '@/components/StatusBadge';
-import {
-	Calendar,
-	MapPin,
-	Users,
-	Plus,
-	Search,
-	Filter,
-	MoreVertical,
-} from 'lucide-react';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
+import { Search, Filter } from 'lucide-react';
+import CreateEvent from '@/components/forms/CreateEvent';
+import EventCard from '@/components/cards/EventCard';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '@/api/axios';
+import { Event } from '@/types/event';
 
 export default function Events() {
-	const navigate = useNavigate();
-	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-	const [newEvent, setNewEvent] = useState({
-		name: '',
-		date: '',
-		distance: '',
-		device: '',
+	const { data: events } = useQuery({
+		queryKey: ['events'],
+		queryFn: async (): Promise<Event[]> => {
+			const { data } = await axiosInstance.get('/event');
+			return data.data;
+		},
 	});
 
-	const handleCreateEvent = () => {
-		// Handle event creation logic here
-		console.log('Creating event:', newEvent);
-		setIsCreateDialogOpen(false);
-		setNewEvent({ name: '', date: '', distance: '', device: '' });
-	};
-
-	const events = [
-		{
-			id: 1,
-			name: 'City Marathon 2024',
-			date: 'Jan 15, 2024',
-			location: 'Downtown',
-			participants: 420,
-			status: 'upcoming' as const,
-			distance: '42.2 km',
-		},
-		{
-			id: 2,
-			name: 'Half Marathon Challenge',
-			date: 'Jan 10, 2024',
-			location: 'Park Lane',
-			participants: 267,
-			status: 'active' as const,
-			distance: '21.1 km',
-		},
-		{
-			id: 3,
-			name: 'Weekend Sprint',
-			date: 'Dec 20, 2023',
-			location: 'City Center',
-			participants: 189,
-			status: 'finished' as const,
-			distance: '10 km',
-		},
-	];
+	// const events = [
+	// 	{
+	// 		id: 1,
+	// 		name: 'City Marathon 2024',
+	// 		date: 'Jan 15, 2024',
+	// 		location: 'Downtown',
+	// 		participants: 420,
+	// 		status: 'upcoming' as const,
+	// 		distance: '42.2 km',
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		name: 'Half Marathon Challenge',
+	// 		date: 'Jan 10, 2024',
+	// 		location: 'Park Lane',
+	// 		participants: 267,
+	// 		status: 'active' as const,
+	// 		distance: '21.1 km',
+	// 	},
+	// 	{
+	// 		id: 3,
+	// 		name: 'Weekend Sprint',
+	// 		date: 'Dec 20, 2023',
+	// 		location: 'City Center',
+	// 		participants: 189,
+	// 		status: 'finished' as const,
+	// 		distance: '10 km',
+	// 	},
+	// ];
 
 	return (
 		<div className='space-y-6 animate-appear'>
@@ -90,85 +54,7 @@ export default function Events() {
 					<h1 className='text-3xl font-bold text-foreground mb-2'>Events</h1>
 					<p className='text-muted-foreground'>Manage all your race events</p>
 				</div>
-				<Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-					<DialogTrigger asChild>
-						<Button className='gap-2'>
-							<Plus className='w-4 h-4' />
-							Create Event
-						</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>Create New Event</DialogTitle>
-							<DialogDescription>
-								Fill in the details to create a new running event.
-							</DialogDescription>
-						</DialogHeader>
-						<div className='space-y-4 py-4'>
-							<div className='space-y-2'>
-								<Label htmlFor='name'>Event Name</Label>
-								<Input
-									id='name'
-									placeholder='e.g., City Marathon 2024'
-									value={newEvent.name}
-									onChange={(e) =>
-										setNewEvent({ ...newEvent, name: e.target.value })
-									}
-								/>
-							</div>
-							<div className='space-y-2'>
-								<Label htmlFor='date'>Date</Label>
-								<Input
-									id='date'
-									type='date'
-									value={newEvent.date}
-									onChange={(e) =>
-										setNewEvent({ ...newEvent, date: e.target.value })
-									}
-								/>
-							</div>
-							<div className='space-y-2'>
-								<Label htmlFor='distance'>Distance (km)</Label>
-								<Input
-									id='distance'
-									type='number'
-									placeholder='e.g., 42.2'
-									value={newEvent.distance}
-									onChange={(e) =>
-										setNewEvent({ ...newEvent, distance: e.target.value })
-									}
-								/>
-							</div>
-							<div className='space-y-2'>
-								<Label htmlFor='device'>Device Type</Label>
-								<Select
-									value={newEvent.device}
-									onValueChange={(value) =>
-										setNewEvent({ ...newEvent, device: value })
-									}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder='Select device type' />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value='rfid'>RFID</SelectItem>
-										<SelectItem value='running-node'>Running Node</SelectItem>
-										<SelectItem value='hybrid'>Hybrid</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-						</div>
-						<div className='flex justify-end gap-2'>
-							<Button
-								variant='outline'
-								onClick={() => setIsCreateDialogOpen(false)}
-							>
-								Cancel
-							</Button>
-							<Button onClick={handleCreateEvent}>Create Event</Button>
-						</div>
-					</DialogContent>
-				</Dialog>
+				<CreateEvent />
 			</div>
 
 			<Card>
@@ -185,62 +71,13 @@ export default function Events() {
 					</div>
 
 					<div className='space-y-3'>
-						{events.map((event) => (
-							<div
-								key={event.id}
-								className='flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors gap-4'
-							>
-								<div className='flex-1 space-y-2'>
-									<div className='flex items-center gap-2'>
-										<h3 className='font-semibold text-foreground'>
-											{event.name}
-										</h3>
-										<StatusBadge status={event.status} />
-									</div>
-									<div className='flex flex-wrap items-center gap-4 text-sm text-muted-foreground'>
-										<span className='flex items-center gap-1'>
-											<Calendar className='w-3 h-3' />
-											{event.date}
-										</span>
-										<span className='flex items-center gap-1'>
-											<MapPin className='w-3 h-3' />
-											{event.location}
-										</span>
-										<span className='flex items-center gap-1'>
-											<Users className='w-3 h-3' />
-											{event.participants} participants
-										</span>
-										<span className='font-medium text-primary'>
-											{event.distance}
-										</span>
-									</div>
-								</div>
-								<div className='flex items-center gap-2'>
-									<Button
-										variant='outline'
-										size='sm'
-										onClick={() => navigate(`/events/${event.id}`)}
-									>
-										View Details
-									</Button>
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button variant='ghost' size='sm'>
-												<MoreVertical className='w-4 h-4' />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align='end'>
-											<DropdownMenuItem>Edit Event</DropdownMenuItem>
-											<DropdownMenuItem>Manage Participants</DropdownMenuItem>
-											<DropdownMenuItem>View Results</DropdownMenuItem>
-											<DropdownMenuItem className='text-destructive'>
-												Delete Event
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
-								</div>
-							</div>
-						))}
+						{!events && (
+							<p className='text-muted-foreground'>No events found</p>
+						)}
+						{events &&
+							events.map((event) => (
+								<EventCard key={event._id} event={event} />
+							))}
 					</div>
 				</CardContent>
 			</Card>

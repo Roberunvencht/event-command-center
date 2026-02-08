@@ -1,8 +1,4 @@
-import {
-	createBrowserRouter,
-	RouterProvider,
-	Navigate,
-} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { Layout } from './components/Layout';
 import { ClientLayout } from './components/ClientLayout';
@@ -61,7 +57,7 @@ const router = createBrowserRouter([
 				element: <Events />,
 			},
 			{
-				path: 'events/:id',
+				path: 'events/:eventID',
 				element: <EventDetail />,
 			},
 			{
