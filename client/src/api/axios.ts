@@ -1,6 +1,6 @@
 import axios, { type CreateAxiosDefaults } from 'axios';
-import { queryClient } from '@/App';
 import { navigate } from '@/lib/navigate';
+import { queryClient } from '@/main';
 
 const UNAUTHORIZED = 401;
 

@@ -1,23 +1,20 @@
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { ClientSidebar } from './ClientSidebar';
-import ProtectedRoute from './ProtectedRoute';
+import { Outlet } from 'react-router-dom';
 
-export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
+export const ClientLayout = () => {
 	return (
-		<ProtectedRoute>
-			<SidebarProvider>
-				<div className='flex min-h-screen w-full'>
-					<ClientSidebar />
-					<main className='flex-1 overflow-auto'>
-						<div className='container mx-auto p-6'>
-							<div className='mb-4'>
-								<SidebarTrigger />
-							</div>
-							{children}
-						</div>
-					</main>
-				</div>
-			</SidebarProvider>
-		</ProtectedRoute>
+		<div className='flex min-h-screen w-full'>
+			<ClientSidebar />
+			<div className='flex-1 flex flex-col'>
+				<header className='h-14 border-b border-border bg-card flex items-center px-4 sticky top-0 z-10'>
+					<SidebarTrigger className='mr-4' />
+					<div className='flex-1' />
+				</header>
+				<main className='flex-1 p-6'>
+					<Outlet />
+				</main>
+			</div>
+		</div>
 	);
 };
