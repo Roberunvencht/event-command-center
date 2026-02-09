@@ -9,6 +9,7 @@ import {
 import { Event } from '@/types/event';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 type EventCardProps = {
 	event: Event;
@@ -47,7 +48,7 @@ export default function EventCard({ event }: EventCardProps) {
 				<div className='flex flex-wrap items-center gap-4 text-sm text-muted-foreground'>
 					<span className='flex items-center gap-1'>
 						<Calendar className='w-3 h-3' />
-						{new Date(event.date).toLocaleDateString()}
+						{format(new Date(event.date), 'MMM dd, yyyy')}
 					</span>
 
 					<span className='flex items-center gap-1'>

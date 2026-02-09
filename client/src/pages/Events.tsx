@@ -7,10 +7,11 @@ import EventCard from '@/components/cards/EventCard';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
 import { Event } from '@/types/event';
+import { QUERY_KEYS } from '@/constants';
 
 export default function Events() {
 	const { data: events } = useQuery({
-		queryKey: ['events'],
+		queryKey: [QUERY_KEYS.EVENT],
 		queryFn: async (): Promise<Event[]> => {
 			const { data } = await axiosInstance.get('/event');
 			return data.data;

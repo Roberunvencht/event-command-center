@@ -2,6 +2,7 @@ import { Event } from '@/types/event';
 import { StatusBadge } from './StatusBadge';
 import { Calendar, Flag, MapPin, Users } from 'lucide-react';
 import BackButton from './buttons/BackButton';
+import { format } from 'date-fns';
 
 type EventFullDetailsProps = {
 	event: Event;
@@ -27,7 +28,7 @@ export default function EventFullDetails({ event }: EventFullDetailsProps) {
 					<Calendar className='w-4 h-4' />
 					<div>
 						<div className='font-medium text-foreground'>
-							{new Date(event.date).toLocaleDateString()}
+							{format(new Date(event.date), 'MMM dd, yyyy')}
 						</div>
 						{event.startTime && (
 							<div>
