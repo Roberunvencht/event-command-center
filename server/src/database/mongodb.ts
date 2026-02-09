@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { seedAdmin } from './adminSeed';
 import { ADMIN_EMAIL, ADMIN_PASSWORD, MONGO_URI } from '../constant/env';
+import seedEvents from './eventSeed';
 
 export default async function connectToMongoDB(): Promise<void> {
 	try {
@@ -12,6 +13,8 @@ export default async function connectToMongoDB(): Promise<void> {
 			email: ADMIN_EMAIL,
 			password: ADMIN_PASSWORD,
 		});
+
+		await seedEvents()
 	} catch (err: any) {
 		console.error('Failed to connect to MongoDB', err);
 	}
