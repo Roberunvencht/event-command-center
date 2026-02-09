@@ -3,6 +3,7 @@ import { Schema, model, Types } from 'mongoose';
 export type EventStatus = 'upcoming' | 'active' | 'finished';
 
 export type RaceCategory = {
+	_id: string;
 	name: string;
 	distanceKm: number;
 	cutoffTime: number; // minutes
@@ -13,6 +14,7 @@ export type RaceCategory = {
 };
 
 export type Event = {
+	_id: string;
 	name: string;
 	description: string;
 	status: EventStatus;
