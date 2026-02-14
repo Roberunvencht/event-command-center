@@ -5,11 +5,13 @@ let socket: Socket | null = null;
 
 export const connectSocket = () => {
 	if (!socket) {
-		socket = io(import.meta.env.VITE_BACKEND_URL!, {
-			auth: {
-				token: localStorage.getItem('token'),
-			},
-		});
+		try {
+			socket = io(import.meta.env.VITE_API_URL!, {
+				withCredentials: true,
+			});
+		} catch (error) {
+			console.error('Error connecting to socket:', error);
+		}
 	}
 	return socket;
 };
@@ -22,6 +24,14 @@ export const disconnectSocket = () => {
 };
 
 export const getSocket = () => {
-	if (!socket) throw new Error('Socket not connected');
+	if (!socket) {
+		try {
+			socket = io(import.meta.env.VITE_API_URL!, {
+				withCredentials: true,
+			});
+		} catch (error) {
+			console.error('Error connecting to socket:', error);
+		}
+	}
 	return socket;
 };

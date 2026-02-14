@@ -35,6 +35,7 @@ export default function RaceParticipation() {
 	useEffect(() => {
 		const socket = connectSocket();
 		console.log(registrationId);
+		console.log(socket);
 		socket.emit('joinRace', { registrationId });
 
 		socket.on('positionUpdate', (data) =>

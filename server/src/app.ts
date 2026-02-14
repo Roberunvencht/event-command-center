@@ -23,6 +23,7 @@ import authRoutes from './routes/auth.route';
 import eventsRoutes from './routes/event.routes';
 import registrationRoutes from './routes/registration.route';
 import paymentRoutes from './routes/payment.route';
+import deviceTelemetryRoutes from './routes/device-telemetry.route';
 import webhookRoutes from './routes/webhook.route';
 
 // Routes
@@ -31,6 +32,7 @@ app.use(auth);
 app.use('/api/v1/event', eventsRoutes);
 app.use('/api/v1/registration', registrationRoutes);
 app.use('/api/v1/payment', paymentRoutes);
+app.use('/api/v1/device', deviceTelemetryRoutes);
 app.use('/api/v1/webhook', webhookRoutes);
 
 // Error handlers
