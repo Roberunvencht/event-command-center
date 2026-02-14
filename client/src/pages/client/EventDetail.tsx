@@ -2,19 +2,26 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-	MapPin,
-	Calendar,
-	Radio,
-	CheckCircle,
-	Clock,
-	Info,
-} from 'lucide-react';
+import { MapPin, Radio, CheckCircle, Info } from 'lucide-react';
+import { QUERY_KEYS } from '@/constants';
+import axiosInstance from '@/api/axios';
+import { Event } from '@/types/event';
+import EventFullDetails from '@/components/EventFullDetails';
+import RaceCategoryTable from '@/components/RaceCategoryTable';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ClientEventDetail() {
 	const { id } = useParams();
 
-	const event = {
+	const { data: event } = useQuery({
+		queryKey: [QUERY_KEYS.EVENT, id],
+		queryFn: async (): Promise<Event> => {
+			const { data } = await axiosInstance.get(`/event/${id}`);
+			return data.data;
+		},
+	});
+
+	const mockEvent = {
 		id: id,
 		name: 'City Marathon 2024',
 		date: 'Jan 15, 2024',
@@ -69,22 +76,12 @@ export default function ClientEventDetail() {
 
 	return (
 		<div className='space-y-6 animate-appear'>
-			<div>
-				<h1 className='text-3xl font-bold text-foreground mb-2'>
-					{event.name}
-				</h1>
-				<div className='flex flex-wrap gap-4 text-muted-foreground'>
-					<span className='flex items-center gap-1'>
-						<Calendar className='w-4 h-4' />
-						{event.date} at {event.time}
-					</span>
-					<span className='flex items-center gap-1'>
-						<MapPin className='w-4 h-4' />
-						{event.location}
-					</span>
-					<span className='text-primary font-medium'>{event.distance}</span>
+			{event && (
+				<div>
+					<EventFullDetails event={event} />
+					<RaceCategoryTable categories={event.raceCategories} />
 				</div>
-			</div>
+			)}
 
 			<div className='grid gap-6 md:grid-cols-2'>
 				<Card className='border-border'>
@@ -97,12 +94,12 @@ export default function ClientEventDetail() {
 					<CardContent className='space-y-4'>
 						<div>
 							<Badge className='bg-teal-500/20 text-teal-700 dark:text-teal-300'>
-								{event.registrationStatus}
+								{mockEvent.registrationStatus}
 							</Badge>
 						</div>
 						<div className='space-y-2'>
 							<p className='text-sm font-medium'>Tech Assignment</p>
-							<Badge variant='outline'>{event.techAssignment}</Badge>
+							<Badge variant='outline'>{mockEvent.techAssignment}</Badge>
 						</div>
 					</CardContent>
 				</Card>
@@ -118,13 +115,13 @@ export default function ClientEventDetail() {
 						<div>
 							<p className='text-sm font-medium mb-1'>Location</p>
 							<p className='text-sm text-muted-foreground'>
-								{event.pickupLocation}
+								{mockEvent.pickupLocation}
 							</p>
 						</div>
 						<div>
 							<p className='text-sm font-medium mb-1'>Pickup Time</p>
 							<p className='text-sm text-muted-foreground'>
-								{event.pickupTime}
+								{mockEvent.pickupTime}
 							</p>
 						</div>
 					</CardContent>

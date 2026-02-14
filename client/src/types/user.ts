@@ -4,6 +4,7 @@ export type User = {
 	_id: string;
 	name: string;
 	email: string;
+	phone: number;
 	role: Role;
 	password: string;
 	archived?: boolean;

@@ -3,15 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router-dom';
-import { RegisterEventDialog } from '../forms/RegisterEventForm';
 import { StatusBadge } from '../StatusBadge';
 import { format } from 'date-fns';
+import { Registration } from '@/types/registration';
+import { EventActionButton } from '../EventActionButton';
 
 type ClientEventCardProps = {
 	event: Event;
+	userRegistrations: Registration[];
 };
 
-export default function ClientEventCard({ event }: ClientEventCardProps) {
+export default function ClientEventCard({
+	event,
+	userRegistrations,
+}: ClientEventCardProps) {
 	const distances = event.raceCategories.map((c) => c.distanceKm);
 	const minDistance = Math.min(...distances);
 	const maxDistance = Math.max(...distances);
@@ -70,7 +75,7 @@ export default function ClientEventCard({ event }: ClientEventCardProps) {
 						<Button asChild variant='outline' size='sm'>
 							<Link to={`/client/events/${event._id}`}>View Details</Link>
 						</Button>
-						<RegisterEventDialog event={event} />
+						<EventActionButton event={event} />
 					</div>
 				</div>
 			</CardContent>

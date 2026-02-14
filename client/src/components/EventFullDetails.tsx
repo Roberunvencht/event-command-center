@@ -3,19 +3,40 @@ import { StatusBadge } from './StatusBadge';
 import { Calendar, Flag, MapPin, Users } from 'lucide-react';
 import BackButton from './buttons/BackButton';
 import { format } from 'date-fns';
+import { EventActionButton } from './EventActionButton';
+import { useUserStore } from '@/stores/user';
+import { useQuery } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/constants';
+import axiosInstance from '@/api/axios';
+import { Registration } from '@/types/registration';
 
 type EventFullDetailsProps = {
 	event: Event;
 };
 
 export default function EventFullDetails({ event }: EventFullDetailsProps) {
+	const { user } = useUserStore((state) => state);
+
+	const { data: userRegistrations } = useQuery({
+		queryKey: [QUERY_KEYS.REGISTRATION, user._id],
+		queryFn: async (): Promise<Registration[]> => {
+			const { data } = await axiosInstance.get(`/registration`, {
+				params: { user: user._id },
+			});
+			return data.data;
+		},
+	});
+
 	return (
 		<div className='space-y-4'>
 			<div>
-				<div className='flex flex-wrap items-center gap-3 mb-2'>
-					<BackButton />
-					<h1 className='text-3xl font-bold text-foreground'>{event.name}</h1>
-					<StatusBadge status={event.status} />
+				<div className='flex items-center justify-between'>
+					<div className='flex flex-wrap items-center gap-3 mb-2'>
+						<BackButton />
+						<h1 className='text-3xl font-bold text-foreground'>{event.name}</h1>
+						<StatusBadge status={event.status} />
+					</div>
+					{user.role === 'user' && <EventActionButton event={event} />}
 				</div>
 
 				{event.description && (

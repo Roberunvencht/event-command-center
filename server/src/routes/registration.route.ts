@@ -1,12 +1,8 @@
-import { Router } from "express";
-import { registerController } from "../controllers/registration.controller";
+import { Router } from 'express';
+import { getRegistrationsHander } from '../controllers/registration.controller';
 
 const router = Router();
 
-router.post(
-  '/events/:eventID/register',
-  registerController
-);
+router.get('/', getRegistrationsHander);
 
 export default router;
-

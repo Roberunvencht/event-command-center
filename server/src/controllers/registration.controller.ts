@@ -1,12 +1,14 @@
 import { BAD_REQUEST, CREATED, NOT_FOUND } from '../constant/http';
 import appAssert from '../errors/app-assert';
 import EventModel from '../models/event.model';
-import RegistrationModel from '../models/registration.model';
+import RegistrationModel, {
+	PopulatedRegistration,
+} from '../models/registration.model';
 import { registrationSchema } from '../schemas/registration.schema';
 import CustomResponse from '../utils/response';
 import { asyncHandler } from '../utils/utils';
 
-export const registerController = asyncHandler(async (req, res) => {
+export const registerHandler = asyncHandler(async (req, res) => {
 	const { eventID } = req.params;
 	appAssert(typeof eventID === 'string', BAD_REQUEST, 'Invalid event ID');
 
@@ -29,8 +31,8 @@ export const registerController = asyncHandler(async (req, res) => {
 
 	// check if the user has already registered for this event
 	const existingRegistration = await RegistrationModel.findOne({
-		userId: req.user._id,
-		eventId: eventID,
+		user: req.user._id,
+		event: eventID,
 	});
 	appAssert(
 		!existingRegistration,
@@ -39,9 +41,9 @@ export const registerController = asyncHandler(async (req, res) => {
 	);
 
 	const registration = await RegistrationModel.create({
-		userId: req.user._id,
-		eventId: eventID,
-		raceCategoryId,
+		user: req.user._id,
+		event: eventID,
+		raceCategory: raceCategoryId,
 		shirtSize,
 		emergencyContact,
 		medicalInfo: Object.fromEntries(
@@ -55,4 +57,33 @@ export const registerController = asyncHandler(async (req, res) => {
 	res
 		.status(CREATED)
 		.json(new CustomResponse(true, registration, 'Registration successful'));
+});
+
+/**
+ * @route
+ * query: userID: string -
+ */
+export const getRegistrationsHander = asyncHandler(async (req, res) => {
+	const { userID } = req.query;
+
+	let filters: any = {};
+
+	if (userID) {
+		filters.user = userID;
+	}
+
+	const registrations = await RegistrationModel.find(filters)
+		.populate('user')
+		.populate('event')
+		.populate('raceCategory')
+		.populate('payment')
+		.lean<PopulatedRegistration>();
+
+	res.json(
+		new CustomResponse(
+			true,
+			registrations,
+			'Registrations fetched successfully',
+		),
+	);
 });

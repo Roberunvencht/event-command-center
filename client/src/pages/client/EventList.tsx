@@ -4,12 +4,25 @@ import axiosInstance from '@/api/axios';
 import ClientEventCard from '@/components/cards/ClientEventCard';
 import { Event } from '@/types/event';
 import { QUERY_KEYS } from '@/constants';
+import { useUserStore } from '@/stores/user';
+import { Registration } from '@/types/registration';
 
 export default function ClientEventList() {
+	const { user } = useUserStore((state) => state);
 	const { data: events } = useQuery({
 		queryKey: [QUERY_KEYS.EVENT],
 		queryFn: async (): Promise<Event[]> => {
 			const { data } = await axiosInstance.get('/event');
+			return data.data;
+		},
+	});
+
+	const { data: userRegistrations } = useQuery({
+		queryKey: [QUERY_KEYS.REGISTRATION, user._id],
+		queryFn: async (): Promise<Registration[]> => {
+			const { data } = await axiosInstance.get(`/registration`, {
+				params: { user: user._id },
+			});
 			return data.data;
 		},
 	});
@@ -34,7 +47,11 @@ export default function ClientEventList() {
 			<div className='grid gap-6'>
 				{events &&
 					events.map((event) => (
-						<ClientEventCard key={event._id} event={event} />
+						<ClientEventCard
+							key={event._id}
+							event={event}
+							userRegistrations={userRegistrations}
+						/>
 					))}
 			</div>
 		</div>

@@ -30,7 +30,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
 	const [showPassword, setShowPassword] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 	const { toast } = useToast();
 
@@ -44,12 +43,11 @@ const Login = () => {
 
 	const onSubmit = async (formData: LoginFormData) => {
 		try {
-			setIsLoading(true);
 			const { data } = await axiosInstance.post('/auth/login', formData);
 			const user = data.data as User;
 
 			if (!user) {
-				form.setError('email', {
+				form.setError('root', {
 					message: 'Invalid email or password',
 				});
 				return;
@@ -59,7 +57,7 @@ const Login = () => {
 				title: 'Welcome back!',
 				description: 'You have successfully logged in.',
 			});
-			console.log(user.role);
+
 			if (user.role === 'admin') {
 				navigate('/');
 			} else {
@@ -69,11 +67,9 @@ const Login = () => {
 			console.error('Failed to login', error);
 			toast({
 				variant: 'destructive',
-				title: 'Error',
-				description: 'An error occurred while logging in.',
+				title: 'Failed to login',
+				description: error.message || 'An error occurred while logging in.',
 			});
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
@@ -217,6 +213,10 @@ const Login = () => {
 										)}
 									/>
 
+									<FormMessage>
+										{form.formState.errors.root?.message}
+									</FormMessage>
+
 									<div className='flex items-center justify-end'>
 										<Link
 											to='/forgot-password'
@@ -230,9 +230,9 @@ const Login = () => {
 										type='submit'
 										className='w-full'
 										size='lg'
-										disabled={isLoading}
+										disabled={form.formState.isSubmitting}
 									>
-										{isLoading ? (
+										{form.formState.isSubmitting ? (
 											'Signing in...'
 										) : (
 											<>

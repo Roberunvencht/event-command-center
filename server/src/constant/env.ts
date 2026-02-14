@@ -27,3 +27,5 @@ export const EMAIL_USER = getEnv('EMAIL_USER');
 export const EMAIL_PASS = getEnv('EMAIL_PASS');
 export const ADMIN_EMAIL = getEnv('ADMIN_EMAIL');
 export const ADMIN_PASSWORD = getEnv('ADMIN_PASSWORD');
+export const PAYMONGO_SECRET = getEnv('PAYMONGO_SECRET');
+export const PAYMONGO_WEBHOOK_SECRET = getEnv('PAYMONGO_WEBHOOK_SECRET');

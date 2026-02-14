@@ -7,6 +7,7 @@ import UserModel, { IUser } from '../models/user.model';
 import bcrypt from 'bcryptjs';
 import { BCRYPT_SALT } from '../constant/env';
 import SessionModel from '../models/session.model';
+import { startCase } from 'lodash';
 
 export const loginService = async (
 	req: Request,
@@ -53,6 +54,7 @@ export const signupService = async (signupData: SignupData) => {
 			parseInt(BCRYPT_SALT),
 		);
 		signupData.password = hashedPassword;
+		signupData.name = startCase(signupData.name);
 
 		const user = await UserModel.create(signupData);
 

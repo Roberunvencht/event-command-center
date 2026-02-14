@@ -329,11 +329,14 @@ export default function CreateEvent() {
 
 						<DialogFooter>
 							<DialogClose asChild>
-								<Button disabled={form.formState.isLoading} variant='outline'>
+								<Button
+									disabled={form.formState.isSubmitting}
+									variant='outline'
+								>
 									Cancel
 								</Button>
 							</DialogClose>
-							<Button disabled={form.formState.isLoading} type='submit'>
+							<Button disabled={form.formState.isSubmitting} type='submit'>
 								Create Event
 							</Button>
 						</DialogFooter>

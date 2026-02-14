@@ -63,7 +63,7 @@ const handleMongoError = (req: Request, res: Response, error: any) => {
 };
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
-	console.log(`PATH ${req.path}`, error);
+	// console.log(`PATH ${req.path}`, error);
 
 	if (error instanceof z.ZodError) {
 		handleZodError(req, res, error);

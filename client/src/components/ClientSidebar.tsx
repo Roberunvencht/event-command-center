@@ -1,4 +1,12 @@
-import { Home, Calendar, Trophy, Activity, User, Power } from 'lucide-react';
+import {
+	Home,
+	Calendar,
+	Trophy,
+	Activity,
+	User,
+	Power,
+	Settings,
+} from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
 	Sidebar,

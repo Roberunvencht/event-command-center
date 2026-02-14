@@ -1,3 +1,4 @@
+import EditProfile from '@/components/EditProfile';
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -21,27 +22,7 @@ export default function Settings() {
 				</p>
 			</div>
 
-			<Card>
-				<CardHeader>
-					<CardTitle>Profile Settings</CardTitle>
-					<CardDescription>Update your organization details</CardDescription>
-				</CardHeader>
-				<CardContent className='space-y-4'>
-					<div className='space-y-2'>
-						<Label htmlFor='org-name'>Organization Name</Label>
-						<Input id='org-name' defaultValue='LapSync Events' />
-					</div>
-					<div className='space-y-2'>
-						<Label htmlFor='email'>Email</Label>
-						<Input id='email' type='email' defaultValue='admin@lapsync.com' />
-					</div>
-					<div className='space-y-2'>
-						<Label htmlFor='phone'>Phone Number</Label>
-						<Input id='phone' type='tel' defaultValue='+1 (555) 123-4567' />
-					</div>
-					<Button>Save Changes</Button>
-				</CardContent>
-			</Card>
+			<EditProfile />
 
 			<Card>
 				<CardHeader>

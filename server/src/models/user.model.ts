@@ -7,6 +7,7 @@ export type Role = 'admin' | 'user';
 export interface IUser extends mongoose.Document {
 	name: string;
 	email: string;
+	phone: number;
 	password: string;
 	role: Role;
 	profilePicture?: string;
@@ -23,6 +24,7 @@ const UserSchema = new Schema<IUser>(
 	{
 		name: { type: String, minlength: 1, required: true },
 		email: { type: String, required: false },
+		phone: { type: Number, required: false },
 		password: { type: String, required: true },
 		profilePicture: { type: String, required: false },
 		resetPasswordToken: { type: String, required: false },
@@ -42,9 +44,9 @@ UserSchema.methods.omitPassword = function () {
 	return user;
 };
 
-UserSchema.pre('save', async function (next) {
-	this.name = this.name.toLowerCase();
-});
+// UserSchema.pre('save', async function (next) {
+// 	this.name = this.name.toLowerCase();
+// });
 
 const UserModel = mongoose.model('User', UserSchema);
 export default UserModel;

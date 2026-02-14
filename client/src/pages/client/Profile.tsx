@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { User, Mail, Phone, Calendar, Radio, Bell } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import EditProfile from '@/components/EditProfile';
 
 export default function Profile() {
 	const profile = {
@@ -50,33 +51,7 @@ export default function Profile() {
 			</div>
 
 			<div className='grid gap-6 md:grid-cols-2'>
-				<Card>
-					<CardHeader>
-						<CardTitle className='flex items-center gap-2'>
-							<User className='w-5 h-5 text-primary' />
-							Personal Information
-						</CardTitle>
-					</CardHeader>
-					<CardContent className='space-y-4'>
-						<div className='space-y-2'>
-							<Label htmlFor='name'>Full Name</Label>
-							<Input id='name' defaultValue={profile.name} />
-						</div>
-						<div className='space-y-2'>
-							<Label htmlFor='email'>Email Address</Label>
-							<Input id='email' type='email' defaultValue={profile.email} />
-						</div>
-						<div className='space-y-2'>
-							<Label htmlFor='phone'>Phone Number</Label>
-							<Input id='phone' type='tel' defaultValue={profile.phone} />
-						</div>
-						<div className='flex items-center gap-2 text-sm text-muted-foreground'>
-							<Calendar className='w-4 h-4' />
-							<span>Member since {profile.memberSince}</span>
-						</div>
-						<Button className='w-full'>Update Profile</Button>
-					</CardContent>
-				</Card>
+				<EditProfile />
 
 				<Card>
 					<CardHeader>

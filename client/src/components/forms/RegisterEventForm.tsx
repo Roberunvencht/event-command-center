@@ -10,11 +10,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus } from 'lucide-react';
-import { DialogClose } from '@radix-ui/react-dialog';
 import {
 	Form,
 	FormControl,
@@ -23,7 +21,6 @@ import {
 	FormLabel,
 	FormMessage,
 } from '../ui/form';
-import { createEventSchema } from '@/schemas/event.schema';
 import axiosInstance from '@/api/axios';
 import { registrationSchema, ShirtSizes } from '@/schemas/registration.schema';
 import { Event } from '@/types/event';
@@ -87,7 +84,7 @@ export function RegisterEventDialog({ event }: RegisterEventDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button>Register Now</Button>
+				<Button size='sm'>Register Now</Button>
 			</DialogTrigger>
 
 			<DialogContent className='max-w-xl max-h-[90vh] overflow-y-auto'>
