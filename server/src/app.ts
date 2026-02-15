@@ -21,6 +21,7 @@ app.get('/', healthcheck);
 
 import authRoutes from './routes/auth.route';
 import eventsRoutes from './routes/event.routes';
+import userRoutes from './routes/user.route';
 import registrationRoutes from './routes/registration.route';
 import paymentRoutes from './routes/payment.route';
 import deviceTelemetryRoutes from './routes/device.route';
@@ -31,6 +32,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/device', deviceTelemetryRoutes);
 app.use(auth);
 app.use('/api/v1/event', eventsRoutes);
+app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/registration', registrationRoutes);
 app.use('/api/v1/payment', paymentRoutes);
 app.use('/api/v1/webhook', webhookRoutes);

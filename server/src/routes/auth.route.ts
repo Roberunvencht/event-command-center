@@ -10,9 +10,7 @@ import {
 	resetPasswordHandler,
 	signupHandler,
 	verifyAuthHandler,
-    updateProfileHandler,
 } from '../controllers/auth.controller';
-import { auth } from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -35,7 +33,5 @@ router.get('/google-calendar/callback', googleCallbackHandler);
 router.post('/forgot-password', forgotPasswordHandler);
 
 router.post('/reset-password/:token', resetPasswordHandler);
-
-router.patch('/me', auth, updateProfileHandler);
 
 export default router;

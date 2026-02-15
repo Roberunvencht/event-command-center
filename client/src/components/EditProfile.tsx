@@ -2,14 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, Calendar, Radio, Bell } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
+import { User, Calendar } from 'lucide-react';
 import { useUserStore } from '@/stores/user';
 import { format } from 'date-fns';
 import { useState } from 'react';
-import axios from '@/api/axios';
 import { useToast } from '@/hooks/use-toast';
+import axiosInstance from '@/api/axios';
 
 export default function EditProfile() {
 	const { user, setUser } = useUserStore((state) => state);
@@ -23,14 +21,21 @@ export default function EditProfile() {
 		if (!user) return;
 		setLoading(true);
 		try {
-			const res = await axios.patch('/auth/me', { name, email, phone });
-			const updated = res.data?.data;
-			if (updated) {
-				setUser(updated);
-				toast({ title: 'Profile updated', description: 'Your profile was updated successfully.' });
-			}
+			const { data } = await axiosInstance.patch('/user', {
+				name,
+				email,
+				phone,
+			});
+			setUser(data.data);
+			toast({
+				title: 'Profile updated',
+				description: 'Your profile was updated successfully.',
+			});
 		} catch (err: any) {
-			toast({ title: 'Update failed', description: err?.message ?? 'Could not update profile.' });
+			toast({
+				title: 'Update failed',
+				description: err?.message ?? 'Could not update profile.',
+			});
 		} finally {
 			setLoading(false);
 		}
@@ -47,20 +52,35 @@ export default function EditProfile() {
 			<CardContent className='space-y-4'>
 				<div className='space-y-2'>
 					<Label htmlFor='name'>Full Name</Label>
-					<Input id='name' value={name} onChange={(e) => setName(e.target.value)} />
+					<Input
+						id='name'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+					/>
 				</div>
 				<div className='space-y-2'>
 					<Label htmlFor='email'>Email Address</Label>
-					<Input id='email' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+					<Input
+						id='email'
+						type='email'
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+					/>
 				</div>
 				<div className='space-y-2'>
 					<Label htmlFor='phone'>Phone Number</Label>
-					<Input id='phone' type='tel' value={phone} onChange={(e) => setPhone(e.target.value)} />
+					<Input
+						id='phone'
+						type='tel'
+						value={phone}
+						onChange={(e) => setPhone(e.target.value)}
+					/>
 				</div>
 				<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 					<Calendar className='w-4 h-4' />
 					<span>
-						Member since {user ? format(new Date(user.createdAt), 'MMM d, yyyy') : ''}
+						Member since{' '}
+						{user ? format(new Date(user.createdAt), 'MMM d, yyyy') : ''}
 					</span>
 				</div>
 				<Button className='w-full' onClick={handleSubmit} disabled={loading}>

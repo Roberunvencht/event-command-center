@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 import CustomResponse from '../utils/response';
 import appAssert from '../errors/app-assert';
-import { createUserSchema, loginSchema, updateUserSchema } from '../schemas/user.schema';
+import { createUserSchema, loginSchema } from '../schemas/user.schema';
 import { oAuth2Client } from '../services/google-client';
 import { sendMail } from '../services/email';
 import { AppErrorCodes } from '../constant';
@@ -222,29 +222,6 @@ export const verifyAuthHandler = asyncHandler(async (req, res) => {
 	}
 
 	res.status(OK).json(user.omitPassword());
-});
-
-/**
- * @route PATCH /api/v1/auth/me - Update current user's profile
- */
-export const updateProfileHandler = asyncHandler(async (req, res) => {
-	const body = updateUserSchema.parse(req.body);
-
-	const user = (req as any).user as any;
-	if (!user) {
-		return res.status(UNAUTHORIZED).json(new CustomResponse(false, null, 'User not found'));
-	}
-
-	user.name = body.name;
-	user.email = body.email;
-	if (body.phone !== undefined) {
-		const num = Number(body.phone);
-		user.phone = isNaN(num) ? body.phone : num;
-	}
-
-	await user.save();
-
-	res.status(OK).json(new CustomResponse(true, user.omitPassword(), 'Profile updated'));
 });
 
 /**
