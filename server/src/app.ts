@@ -28,11 +28,11 @@ import webhookRoutes from './routes/webhook.route';
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/device', deviceTelemetryRoutes);
 app.use(auth);
 app.use('/api/v1/event', eventsRoutes);
 app.use('/api/v1/registration', registrationRoutes);
 app.use('/api/v1/payment', paymentRoutes);
-app.use('/api/v1/device', deviceTelemetryRoutes);
 app.use('/api/v1/webhook', webhookRoutes);
 
 // Error handlers

@@ -17,15 +17,17 @@ L.Icon.Default.mergeOptions({
 });
 
 export const LiveMap = () => {
-	const [position, setPosition] = useState<[number, number] | null>([
-		8.163334, 125.130747,
-	]);
+	// const [position, setPosition] = useState<[number, number] | null>([
+	// 	8.163334, 125.130747,
+	// ]);
+	const [position, setPosition] = useState<[number, number] | null>(null);
 	const [path, setPath] = useState<[number, number][]>([]);
 
 	useEffect(() => {
 		const socket = getSocket('race');
 
 		socket.on('gpsUpdate', (gps) => {
+			console.log(gps);
 			const coords: [number, number] = [gps.lat, gps.lon];
 			setPosition(coords);
 			setPath((prev) => [...prev, coords]);

@@ -1,4 +1,4 @@
-import { BAD_REQUEST, UNAUTHORIZED } from '../constant/http';
+import { BAD_REQUEST, OK, UNAUTHORIZED } from '../constant/http';
 import appAssert from '../errors/app-assert';
 import DeviceModel, { PopulatedDevice } from '../models/device.model';
 import TelemetryModel from '../models/telemetry.model';
@@ -9,40 +9,56 @@ import { asyncHandler, generateCypto } from '../utils/utils';
 export const deviceTelemetryController = asyncHandler(async (req, res) => {
 	const { deviceToken, gps, heartRate, emg } = req.body;
 
-	const device = await DeviceModel.findOne<PopulatedDevice>({
-		deviceToken,
-		isActive: true,
-	}).populate('registration');
+	console.log(deviceToken, gps, heartRate, emg);
+	// const device = await DeviceModel.findOne<PopulatedDevice>({
+	// 	deviceToken,
+	// 	isActive: true,
+	// }).populate('registration');
 
-	appAssert(device && device.registration, UNAUTHORIZED, 'Unauthorized device');
+	// appAssert(device && device.registration, UNAUTHORIZED, 'Unauthorized device');
 
-	const registrationId = device.registration._id.toString();
+	// const registrationId = device.registration._id.toString();
 
 	// Only emit what exists
 	if (gps) {
-		io.of('/race').to(registrationId).emit('gpsUpdate', gps);
+		io.of('/race').emit('gpsUpdate', gps);
 	}
 
 	if (heartRate) {
-		io.of('/race').to(registrationId).emit('bioSignalUpdate', {
+		io.of('/race').emit('bioSignalUpdate', {
 			heartRate,
 		});
 	}
 
 	if (emg) {
-		io.of('/race').to(registrationId).emit('bioSignalUpdate', {
+		io.of('/race').emit('bioSignalUpdate', {
 			emg,
 		});
 	}
+	// if (gps) {
+	// 	io.of('/race').to(registrationId).emit('gpsUpdate', gps);
+	// }
 
-	await TelemetryModel.create({
-		registration: device.registration._id,
-		gps,
-		heartRate,
-		emg,
-	});
+	// if (heartRate) {
+	// 	io.of('/race').to(registrationId).emit('bioSignalUpdate', {
+	// 		heartRate,
+	// 	});
+	// }
 
-	res.json({ success: true });
+	// if (emg) {
+	// 	io.of('/race').to(registrationId).emit('bioSignalUpdate', {
+	// 		emg,
+	// 	});
+	// }
+
+	// await TelemetryModel.create({
+	// 	registration: device.registration._id,
+	// 	gps,
+	// 	heartRate,
+	// 	emg,
+	// });
+
+	res.status(OK).json({ success: true });
 });
 
 export const getDevices = asyncHandler(async (req, res) => {
