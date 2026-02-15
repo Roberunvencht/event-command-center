@@ -89,3 +89,25 @@ export const createDevice = asyncHandler(async (req, res) => {
 		device,
 	});
 });
+
+export const removeDevice = asyncHandler(async (req, res) => {
+	const { deviceID } = req.params;
+
+	const device = await DeviceModel.findByIdAndDelete(deviceID);
+	appAssert(device, BAD_REQUEST, 'Device not found');
+
+	res.json(new CustomResponse(true, null, 'Device deleted successfully'));
+});
+
+export const unassignDevice = asyncHandler(async (req, res) => {
+	const { deviceID } = req.params;
+
+	const device = await DeviceModel.findByIdAndUpdate(
+		deviceID,
+		{ registration: null },
+		{ new: true },
+	);
+	appAssert(device, BAD_REQUEST, 'Device not found');
+
+	res.json(new CustomResponse(true, null, 'Device unassigned successfully'));
+});

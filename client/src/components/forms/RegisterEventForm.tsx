@@ -31,6 +31,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '../ui/select';
+import { queryClient } from '@/main';
+import { QUERY_KEYS } from '@/constants';
 
 type RegisterEventDialogProps = {
 	event: Event;
@@ -59,16 +61,17 @@ export function RegisterEventDialog({ event }: RegisterEventDialogProps) {
 
 	const onSubmit = async (values: z.infer<typeof registrationSchema>) => {
 		try {
-			const { data } = await axiosInstance.post(
-				`/event/${event._id}/register`,
-				values,
-			);
-
-			console.log(data);
+			await axiosInstance.post(`/event/${event._id}/register`, values);
 
 			toast({
 				title: 'Registration successful',
 				description: 'Proceed to payment to confirm your slot.',
+			});
+
+			form.reset();
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EVENT] });
+			await queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.REGISTRATIONS],
 			});
 		} catch (error) {
 			console.error('Error registering event:', error);

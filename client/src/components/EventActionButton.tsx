@@ -17,7 +17,7 @@ export function EventActionButton({ event }: EventActionButtonProps) {
 	const { user } = useUserStore((state) => state);
 
 	const { data: userRegistrations } = useQuery({
-		queryKey: [QUERY_KEYS.REGISTRATION, user._id],
+		queryKey: [QUERY_KEYS.REGISTRATIONS, user._id],
 		queryFn: async (): Promise<Registration[]> => {
 			const { data } = await axiosInstance.get(`/registration`, {
 				params: { user: user._id },

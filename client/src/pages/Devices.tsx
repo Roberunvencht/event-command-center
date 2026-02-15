@@ -23,6 +23,8 @@ import { QUERY_KEYS } from '@/constants';
 import { Device } from '@/types/device';
 import _ from 'lodash';
 import { useToast } from '@/hooks/use-toast';
+import { queryClient } from '@/main';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 export default function Devices() {
 	const { toast } = useToast();
@@ -45,6 +47,42 @@ export default function Devices() {
 				variant: 'destructive',
 				title: 'Error',
 				description: 'Failed to copy token',
+			});
+		}
+	};
+
+	const handleUnassign = async (deviceID: string) => {
+		try {
+			await axiosInstance.patch(`/device/unassign/${deviceID}`);
+			toast({
+				title: 'Unassigned',
+				description: 'Device unassigned successfully',
+			});
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DEVICES] });
+		} catch (error) {
+			console.error('Failed to unassign device', error);
+			toast({
+				variant: 'destructive',
+				title: 'Failed to unassign device',
+				description: error.message ?? 'Failed to unassign device',
+			});
+		}
+	};
+
+	const handleRemoveDevice = async (deviceID: string) => {
+		try {
+			await axiosInstance.delete(`/device/${deviceID}`);
+			toast({
+				title: 'Deleted',
+				description: 'Device deleted successfully',
+			});
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DEVICES] });
+		} catch (error) {
+			console.error('Failed to delete device', error);
+			toast({
+				variant: 'destructive',
+				title: 'Failed to delete device',
+				description: error.message ?? 'Failed to delete device',
 			});
 		}
 	};
@@ -136,12 +174,19 @@ export default function Devices() {
 
 														{device.registration !== undefined && (
 															<DropdownMenuItem>
-																Unassign Device
+																<button
+																	onClick={() => handleUnassign(device._id)}
+																>
+																	Unassign Device
+																</button>
 															</DropdownMenuItem>
 														)}
 
 														<DropdownMenuItem className='text-destructive'>
-															Remove Device
+															<ConfirmDialog
+																onConfirm={() => handleRemoveDevice(device._id)}
+																trigger={<button>Remove Device</button>}
+															/>
 														</DropdownMenuItem>
 													</DropdownMenuContent>
 												</DropdownMenu>

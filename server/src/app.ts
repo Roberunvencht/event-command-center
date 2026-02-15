@@ -24,12 +24,12 @@ import eventsRoutes from './routes/event.routes';
 import userRoutes from './routes/user.route';
 import registrationRoutes from './routes/registration.route';
 import paymentRoutes from './routes/payment.route';
-import deviceTelemetryRoutes from './routes/device.route';
+import deviceRoutes from './routes/device.route';
 import webhookRoutes from './routes/webhook.route';
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/device', deviceTelemetryRoutes);
+app.use('/api/v1/device', deviceRoutes);
 app.use(auth);
 app.use('/api/v1/event', eventsRoutes);
 app.use('/api/v1/user', userRoutes);

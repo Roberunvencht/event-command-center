@@ -40,7 +40,9 @@ export default function Participants() {
 			if (eventID) {
 				params.append('eventID', eventID);
 			}
-			const { data } = await axiosInstance.get(`/registration?${params.toString()}`);
+			const { data } = await axiosInstance.get(
+				`/registration?${params.toString()}`,
+			);
 			return Array.isArray(data.data) ? data.data : [];
 		},
 	});
@@ -50,9 +52,12 @@ export default function Participants() {
 			(reg) =>
 				reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 				reg.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				(reg.bibNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
+				(reg.bibNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+					false),
 		);
 	}, [registrations, searchTerm]);
+
+	console.log({ filteredParticipants });
 
 	return (
 		<div className='space-y-6 animate-appear'>
@@ -108,25 +113,36 @@ export default function Participants() {
 									<TableHead>Category</TableHead>
 									<TableHead>Shirt Size</TableHead>
 									<TableHead>Status</TableHead>
-									{isAdmin && <TableHead className='text-right'>Actions</TableHead>}
+									{isAdmin && (
+										<TableHead className='text-right'>Actions</TableHead>
+									)}
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{isLoading ? (
 									<TableRow>
-										<TableCell colSpan={isAdmin ? 8 : 7} className='text-center text-muted-foreground py-8'>
+										<TableCell
+											colSpan={isAdmin ? 8 : 7}
+											className='text-center text-muted-foreground py-8'
+										>
 											Loading participants...
 										</TableCell>
 									</TableRow>
 								) : filteredParticipants.length === 0 ? (
 									<TableRow>
-										<TableCell colSpan={isAdmin ? 8 : 7} className='text-center text-muted-foreground py-8'>
+										<TableCell
+											colSpan={isAdmin ? 8 : 7}
+											className='text-center text-muted-foreground py-8'
+										>
 											No participants found
 										</TableCell>
 									</TableRow>
 								) : (
 									filteredParticipants.map((registration) => (
-										<TableRow key={registration._id} className='hover:bg-muted/30'>
+										<TableRow
+											key={registration._id}
+											className='hover:bg-muted/30'
+										>
 											<TableCell className='font-medium'>
 												{registration.bibNumber || '-'}
 											</TableCell>
@@ -158,10 +174,16 @@ export default function Participants() {
 														</DropdownMenuTrigger>
 														<DropdownMenuContent align='end'>
 															<DropdownMenuItem asChild>
-																<RegistrationDetailsModal registration={registration} />
+																<RegistrationDetailsModal
+																	registration={registration}
+																/>
 															</DropdownMenuItem>
-															<DropdownMenuItem>Edit Participant</DropdownMenuItem>
-															<DropdownMenuItem>Assign Hardware</DropdownMenuItem>
+															<DropdownMenuItem>
+																Edit Participant
+															</DropdownMenuItem>
+															<DropdownMenuItem>
+																Assign Hardware
+															</DropdownMenuItem>
 															<DropdownMenuItem className='text-destructive'>
 																Remove
 															</DropdownMenuItem>

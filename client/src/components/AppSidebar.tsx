@@ -1,18 +1,12 @@
 import {
 	Home,
 	Users,
-	Trophy,
 	Calendar,
 	Settings,
-	HardDrive,
-	Activity,
 	FileText,
-	History,
-	MessageSquare,
 	Power,
 	Computer,
 } from 'lucide-react';
-import { NavLink } from '@/components/NavLink';
 import {
 	Sidebar,
 	SidebarContent,
@@ -20,19 +14,25 @@ import {
 	SidebarGroupContent,
 	SidebarGroupLabel,
 	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
 	SidebarHeader,
 } from '@/components/ui/sidebar';
+import SidebarLink from './sidebars/SidebarLink';
+import LogoutButton from './buttons/LogoutButton';
 
-const menuItems = [
+export type MenuItem = {
+	title: string;
+	url: string;
+	icon: any;
+	asButton?: boolean;
+};
+
+const menuItems: MenuItem[] = [
 	{ title: 'Dashboard', url: '/', icon: Home },
 	{ title: 'Events', url: '/events', icon: Calendar },
 	{ title: 'Participants', url: '/participants', icon: Users },
 	{ title: 'Devices', url: '/devices', icon: Computer },
 	{ title: 'Reports', url: '/reports', icon: FileText },
 	{ title: 'Settings', url: '/settings', icon: Settings },
-	{ title: 'Logout', url: '/logout', icon: Power },
 ];
 
 export function AppSidebar() {
@@ -59,21 +59,12 @@ export function AppSidebar() {
 					</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{menuItems.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<NavLink
-											to={item.url}
-											end={item.url === '/'}
-											className='hover:bg-sidebar-accent transition-colors'
-											activeClassName='bg-sidebar-accent text-primary font-medium'
-										>
-											<item.icon className='w-4 h-4' />
-											<span>{item.title}</span>
-										</NavLink>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							<>
+								{menuItems.map((item) => (
+									<SidebarLink key={item.title} item={item} />
+								))}
+								<LogoutButton />
+							</>
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>

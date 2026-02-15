@@ -1,13 +1,4 @@
-import {
-	Home,
-	Calendar,
-	Trophy,
-	Activity,
-	User,
-	Power,
-	Settings,
-} from 'lucide-react';
-import { NavLink } from '@/components/NavLink';
+import { Home, Calendar, Trophy, Activity, User, Power } from 'lucide-react';
 import {
 	Sidebar,
 	SidebarContent,
@@ -15,18 +6,18 @@ import {
 	SidebarGroupContent,
 	SidebarGroupLabel,
 	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
 	SidebarHeader,
 } from '@/components/ui/sidebar';
+import { MenuItem } from './AppSidebar';
+import SidebarLink from './sidebars/SidebarLink';
+import LogoutButton from './buttons/LogoutButton';
 
-const menuItems = [
+const menuItems: MenuItem[] = [
 	{ title: 'Home', url: '/client', icon: Home },
 	{ title: 'Events', url: '/client/events', icon: Calendar },
 	{ title: 'Leaderboard', url: '/client/leaderboard', icon: Trophy },
 	{ title: 'Live Race', url: '/client/race', icon: Activity },
 	{ title: 'Profile', url: '/client/profile', icon: User },
-	{ title: 'Logout', url: '/logout', icon: Power },
 ];
 
 export function ClientSidebar() {
@@ -51,21 +42,12 @@ export function ClientSidebar() {
 					</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{menuItems.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<NavLink
-											to={item.url}
-											end={item.url === '/client'}
-											className='hover:bg-sidebar-accent transition-colors'
-											activeClassName='bg-sidebar-accent text-primary font-medium'
-										>
-											<item.icon className='w-4 h-4' />
-											<span>{item.title}</span>
-										</NavLink>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							<>
+								{menuItems.map((item) => (
+									<SidebarLink key={item.title} item={item} />
+								))}
+								<LogoutButton />
+							</>
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>

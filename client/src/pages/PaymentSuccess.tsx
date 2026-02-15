@@ -30,7 +30,7 @@ export default function PaymentSuccess() {
 
 				if (data.data === true) {
 					setMessage('Payment successful! 🎉');
-					setTimeout(() => navigate('/client/events'), 3000);
+					setTimeout(() => navigate('/client/events'), 2000);
 				} else if (typeof data.data === 'string') {
 					// active checkout URL returned
 					setMessage('Payment pending, redirecting...');
@@ -48,7 +48,7 @@ export default function PaymentSuccess() {
 	}, [registrationId, navigate]);
 
 	return (
-		<div className='flex flex-col items-center justify-center '>
+		<div className='flex flex-col items-center justify-center pt-40'>
 			<h1 className='text-2xl font-bold'>
 				{loading ? 'Verifying...' : message}
 			</h1>

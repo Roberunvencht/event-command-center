@@ -43,7 +43,7 @@ export const registerHandler = asyncHandler(async (req, res) => {
 	const registration = await RegistrationModel.create({
 		user: req.user._id,
 		event: eventID,
-		raceCategory: raceCategoryId,
+		raceCategory: category,
 		shirtSize,
 		emergencyContact,
 		medicalInfo: Object.fromEntries(
@@ -79,7 +79,6 @@ export const getRegistrationsHander = asyncHandler(async (req, res) => {
 	const registrations = await RegistrationModel.find(filters)
 		.populate('user')
 		.populate('event')
-		.populate('raceCategory')
 		.populate('payment')
 		.lean<PopulatedRegistration>();
 

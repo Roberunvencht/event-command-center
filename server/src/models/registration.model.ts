@@ -9,7 +9,7 @@ export type Registration = {
 	_id: Types.ObjectId;
 	user: PopulatedDoc<IUser>;
 	event: PopulatedDoc<Event>;
-	raceCategory: PopulatedDoc<RaceCategory>;
+	raceCategory: RaceCategory;
 	bibNumber?: string;
 	shirtSize: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL';
 	emergencyContact: {
