@@ -23,7 +23,7 @@ import authRoutes from './routes/auth.route';
 import eventsRoutes from './routes/event.routes';
 import registrationRoutes from './routes/registration.route';
 import paymentRoutes from './routes/payment.route';
-import deviceTelemetryRoutes from './routes/device-telemetry.route';
+import deviceTelemetryRoutes from './routes/device.route';
 import webhookRoutes from './routes/webhook.route';
 
 // Routes

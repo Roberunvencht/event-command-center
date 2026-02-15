@@ -51,8 +51,8 @@ export const registerHandler = asyncHandler(async (req, res) => {
 		),
 	});
 
-	category.registeredCount++;
-	await event.save();
+	// category.registeredCount++;
+	// await event.save();
 
 	res
 		.status(CREATED)

@@ -27,72 +27,22 @@ raceNamespace.on('connection', (socket) => {
 	});
 });
 
-/* -------------------------
-   DEVICE NAMESPACE
--------------------------- */
-const deviceNamespace = io.of('/device');
+let position = [8.163334, 125.130747];
 
-// Middleware authentication
-// deviceNamespace.use(async (socket, next) => {
-// 	try {
-// 		const token = socket.handshake.auth.deviceToken;
+setInterval(() => {
+	console.log('Emitting GPS update');
+	if (position[0] && position[1]) {
+		position = [
+			position[0] + Math.random() * 0.0003,
+			position[1] + Math.random() * 0.0003,
+		];
 
-// 		if (!token) {
-// 			return next(new Error('No device token'));
-// 		}
-
-// 		const device = await DeviceModel.findOne({
-// 			deviceToken: token,
-// 			isActive: true,
-// 		}).populate('registration');
-
-// 		if (!device || !device.registration) {
-// 			return next(new Error('Unauthorized device'));
-// 		}
-
-// 		socket.data.device = device;
-// 		next();
-// 	} catch (error) {
-// 		next(new Error('Authentication error'));
-// 	}
-// });
-
-deviceNamespace.on('connection', (socket) => {
-	console.log('Device connected:', socket.id);
-
-	socket.on('raceUpdate', (payload) => {
-		const device = socket.data.device;
-		const registrationId = device.registration._id.toString();
-
-		raceNamespace.to(registrationId).emit('positionUpdate', {
-			position: payload.position,
+		raceNamespace.emit('gpsUpdate', {
+			lat: position[0],
+			lon: position[1],
 		});
-
-		raceNamespace.to(registrationId).emit('timeUpdate', {
-			timeElapsed: payload.timeElapsed,
-			pace: payload.pace,
-		});
-
-		raceNamespace.to(registrationId).emit('bioSignalUpdate', {
-			heartRate: payload.heartRate,
-			heartRateZone: payload.heartRateZone,
-			emg: payload.emg,
-			warning: payload.warning,
-		});
-
-		raceNamespace.to(registrationId).emit('checkpointUpdate', {
-			nextCheckpoint: payload.nextCheckpoint,
-			distanceToCheckpoint: payload.distanceToCheckpoint,
-			estimatedTime: payload.estimatedTime,
-			distance: payload.distance,
-			checkpoints: payload.checkpoints,
-		});
-	});
-
-	socket.on('disconnect', () => {
-		console.log('Device disconnected');
-	});
-});
+	}
+}, 2000);
 
 if (NODE_ENV === 'development') {
 	server.listen(Number(PORT), () => {

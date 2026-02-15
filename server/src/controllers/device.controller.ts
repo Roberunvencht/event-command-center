@@ -3,7 +3,8 @@ import appAssert from '../errors/app-assert';
 import DeviceModel, { PopulatedDevice } from '../models/device.model';
 import TelemetryModel from '../models/telemetry.model';
 import { io } from '../server';
-import { asyncHandler } from '../utils/utils';
+import CustomResponse from '../utils/response';
+import { asyncHandler, generateCypto } from '../utils/utils';
 
 export const deviceTelemetryController = asyncHandler(async (req, res) => {
 	const { deviceToken, gps, heartRate, emg } = req.body;
@@ -42,4 +43,33 @@ export const deviceTelemetryController = asyncHandler(async (req, res) => {
 	});
 
 	res.json({ success: true });
+});
+
+export const getDevices = asyncHandler(async (req, res) => {
+	const devices = await DeviceModel.find().populate('registration');
+
+	res.json(new CustomResponse(true, devices, 'Devices fetched successfully'));
+});
+
+export const createDevice = asyncHandler(async (req, res) => {
+	const { name, deviceToken, isActive } = req.body;
+
+	const existing = await DeviceModel.findOne({ deviceToken });
+	if (existing) {
+		res
+			.status(BAD_REQUEST)
+			.json(new CustomResponse(false, null, 'Device already exists'));
+		return;
+	}
+
+	const device = await DeviceModel.create({
+		name,
+		deviceToken: generateCypto(),
+		isActive,
+	});
+
+	res.json({
+		success: true,
+		device,
+	});
 });

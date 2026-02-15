@@ -37,10 +37,6 @@ export type Event = {
 		opensAt: Date;
 		closesAt: Date;
 	};
-	capacity: {
-		totalSlots: number;
-		registeredCount: number;
-	};
 	createdAt: Date;
 	updatedAt: Date;
 };
@@ -86,11 +82,6 @@ const EventSchema = new Schema<Event>(
 			isOpen: { type: Boolean, default: false },
 			opensAt: Date,
 			closesAt: Date,
-		},
-
-		capacity: {
-			totalSlots: Number,
-			registeredCount: { type: Number, default: 0 },
 		},
 	},
 	{ timestamps: true },

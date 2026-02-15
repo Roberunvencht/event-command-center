@@ -1,6 +1,8 @@
 import { FRONTEND_URL } from '../constant/env';
 import { BAD_REQUEST, NOT_FOUND } from '../constant/http';
 import appAssert from '../errors/app-assert';
+import DeviceModel from '../models/device.model';
+import EventModel from '../models/event.model';
 import PaymentModel from '../models/payment.model';
 import RegistrationModel, {
 	PopulatedRegistration,
@@ -78,20 +80,49 @@ export const verifyCheckoutSession = asyncHandler(async (req, res) => {
 		return;
 	}
 
+	// check if user has already paid using paymongo
 	const { hasPaid, activeCheckoutUrl } = await checkIfUserAlreadyPaid([
 		payment.checkoutSessionId,
 	]);
 
 	if (hasPaid) {
-		await Promise.all([
-			PaymentModel.findByIdAndUpdate(payment._id, {
-				status: 'paid',
-				paidAt: new Date(),
-			}),
-			RegistrationModel.findByIdAndUpdate(registration._id, {
-				status: 'confirmed',
-			}),
-		]);
+		payment.status = 'paid';
+		payment.paidAt = new Date();
+		await payment.save();
+
+		registration.status = 'confirmed';
+		await registration.save();
+
+		// update event race category registered count
+		const event = await EventModel.findById(registration.event);
+
+		if (event) {
+			const raceCategory = event.raceCategories.find(
+				(rc) => rc._id.toString() === registration.raceCategory?.toString(),
+			);
+
+			if (raceCategory) {
+				raceCategory.registeredCount = (raceCategory.registeredCount || 0) + 1;
+
+				await event.save();
+			}
+		}
+
+		// Find available device
+		const device = await DeviceModel.findOne({
+			registration: null,
+			isActive: true,
+		});
+
+		if (device) {
+			// Assign device
+			device.registration = registration._id;
+			await device.save();
+
+			// Optionally store reference in registration
+			registration.device = device._id;
+			await registration.save();
+		}
 
 		res.json(new CustomResponse(true, true, 'Payment successful'));
 		return;
