@@ -1,4 +1,4 @@
-export type EventStatus = 'upcoming' | 'active' | 'finished';
+export type EventStatus = 'upcoming' | 'active' | 'finished' | 'archived';
 
 export type RaceCategory = {
 	_id: string;
