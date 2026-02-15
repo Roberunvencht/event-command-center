@@ -61,15 +61,19 @@ export const registerHandler = asyncHandler(async (req, res) => {
 
 /**
  * @route
- * query: userID: string -
+ * query: userID: string | eventID: string
  */
 export const getRegistrationsHander = asyncHandler(async (req, res) => {
-	const { userID } = req.query;
+	const { userID, eventID } = req.query;
 
 	let filters: any = {};
 
 	if (userID) {
 		filters.user = userID;
+	}
+
+	if (eventID) {
+		filters.event = eventID;
 	}
 
 	const registrations = await RegistrationModel.find(filters)

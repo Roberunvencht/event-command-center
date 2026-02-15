@@ -28,7 +28,8 @@ export const createUserSchema = z
 
 export const updateUserSchema = z.object({
 	name: z.string().min(1, 'Full name is required'),
-	email: z.email('Invalid email'),
+	email: z.string().email('Invalid email'),
+	phone: z.string().optional(),
 });
 
 export const loginSchema = z.object({

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-type StatusType = "finished" | "active" | "upcoming" | "cancelled" | "pending" | "accepted" | "rejected";
+type StatusType = "finished" | "active" | "upcoming" | "cancelled" | "pending" | "accepted" | "rejected" | "confirmed" | "completed";
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -16,6 +16,8 @@ const statusConfig: Record<StatusType, { label: string; variant: "default" | "se
   pending: { label: "Pending", variant: "outline" },
   accepted: { label: "Accepted", variant: "default" },
   rejected: { label: "Rejected", variant: "destructive" },
+  confirmed: { label: "Confirmed", variant: "default" },
+  completed: { label: "Completed", variant: "secondary" },
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
