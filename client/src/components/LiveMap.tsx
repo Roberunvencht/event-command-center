@@ -5,10 +5,12 @@ import { getSocket } from '@/services/socket';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+// import RedDot from '/images/red-dot.png';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
+	// iconRetinaUrl: RedDot,
 	iconRetinaUrl: markerIcon2x,
 	iconUrl: markerIcon,
 	shadowUrl: markerShadow,
@@ -21,8 +23,7 @@ export const LiveMap = () => {
 	const [path, setPath] = useState<[number, number][]>([]);
 
 	useEffect(() => {
-		const socket = getSocket();
-		console.log('LiveMap mounted');
+		const socket = getSocket('race');
 
 		socket.on('gpsUpdate', (gps) => {
 			const coords: [number, number] = [gps.lat, gps.lon];

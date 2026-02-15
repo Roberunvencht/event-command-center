@@ -25,6 +25,8 @@ import {
 } from '../ui/form';
 import { createEventSchema } from '@/schemas/event.schema';
 import axiosInstance from '@/api/axios';
+import { queryClient } from '@/main';
+import { QUERY_KEYS } from '@/constants';
 
 export default function CreateEvent() {
 	const { toast } = useToast();
@@ -65,6 +67,8 @@ export default function CreateEvent() {
 				title: 'Event created',
 				description: 'Your event has been created successfully.',
 			});
+			form.reset();
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EVENT] });
 		} catch (error) {
 			console.error('Error creating event:', error);
 			toast({

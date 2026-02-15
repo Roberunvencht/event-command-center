@@ -48,7 +48,7 @@ export default function PaymentSuccess() {
 	}, [registrationId, navigate]);
 
 	return (
-		<div className='flex flex-col items-center justify-center h-screen'>
+		<div className='flex flex-col items-center justify-center '>
 			<h1 className='text-2xl font-bold'>
 				{loading ? 'Verifying...' : message}
 			</h1>

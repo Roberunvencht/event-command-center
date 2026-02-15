@@ -36,10 +36,6 @@ export type Event = {
 		opensAt: Date;
 		closesAt: Date;
 	};
-	capacity: {
-		totalSlots: number;
-		registeredCount: number;
-	};
 	createdAt: Date;
 	updatedAt: Date;
 };

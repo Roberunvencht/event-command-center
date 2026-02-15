@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { connectSocket, disconnectSocket } from '@/services/socket';
+import { getSocket, disconnectSocket } from '@/services/socket';
 import { RaceStatsCards } from '@/components/RaceStatsCards.tsx';
 import { RaceProgress } from '@/components/RaceProgress.tsx';
 import { BioSignalMonitor } from '@/components/BioSignalMonitor.tsx';
@@ -33,9 +33,9 @@ export default function RaceParticipation() {
 	});
 
 	useEffect(() => {
-		const socket = connectSocket();
+		const socket = getSocket('race');
 		console.log(registrationId);
-		console.log(socket);
+
 		socket.emit('joinRace', { registrationId });
 
 		socket.on('positionUpdate', (data) =>
@@ -70,7 +70,7 @@ export default function RaceParticipation() {
 
 		return () => {
 			socket.emit('leaveRace', { registrationId });
-			disconnectSocket();
+			disconnectSocket('race');
 		};
 	}, [registrationId]);
 

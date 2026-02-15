@@ -10,6 +10,7 @@ import {
 	History,
 	MessageSquare,
 	Power,
+	Computer,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -28,6 +29,7 @@ const menuItems = [
 	{ title: 'Dashboard', url: '/', icon: Home },
 	{ title: 'Events', url: '/events', icon: Calendar },
 	{ title: 'Participants', url: '/participants', icon: Users },
+	{ title: 'Devices', url: '/devices', icon: Computer },
 	{ title: 'Reports', url: '/reports', icon: FileText },
 	{ title: 'Settings', url: '/settings', icon: Settings },
 	{ title: 'Logout', url: '/logout', icon: Power },

@@ -23,6 +23,7 @@ import Signup from './pages/auth/Signup';
 import Logout from './pages/auth/Logout';
 import ProtectedRoute from './components/ProtectedRoute';
 import PaymentSuccess from './pages/PaymentSuccess';
+import Devices from './pages/Devices';
 
 const router = createBrowserRouter([
 	/* ------------------ Auth Routes ------------------ */
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
 			{
 				path: 'participants',
 				element: <Participants />,
+			},
+			{
+				path: 'devices',
+				element: <Devices />,
 			},
 			{
 				path: 'reports',

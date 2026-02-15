@@ -1,37 +1,28 @@
-// services/socket.ts
 import { io, Socket } from 'socket.io-client';
 
-let socket: Socket | null = null;
+const sockets: Record<string, Socket> = {};
 
-export const connectSocket = () => {
-	if (!socket) {
-		try {
-			socket = io(import.meta.env.VITE_API_URL!, {
-				withCredentials: true,
-			});
-		} catch (error) {
-			console.error('Error connecting to socket:', error);
-		}
+export const getSocket = (namespace: string): Socket => {
+	if (!sockets[namespace]) {
+		sockets[namespace] = io(`${import.meta.env.VITE_API_URL}/${namespace}`, {
+			withCredentials: true,
+		});
+
+		sockets[namespace].on('connect', () => {
+			console.log(`Connected to namespace: ${namespace}`);
+		});
+
+		sockets[namespace].on('disconnect', () => {
+			console.log(`Disconnected from namespace: ${namespace}`);
+		});
 	}
-	return socket;
+
+	return sockets[namespace];
 };
 
-export const disconnectSocket = () => {
-	if (socket) {
-		socket.disconnect();
-		socket = null;
+export const disconnectSocket = (namespace: string) => {
+	if (sockets[namespace]) {
+		sockets[namespace].disconnect();
+		delete sockets[namespace];
 	}
-};
-
-export const getSocket = () => {
-	if (!socket) {
-		try {
-			socket = io(import.meta.env.VITE_API_URL!, {
-				withCredentials: true,
-			});
-		} catch (error) {
-			console.error('Error connecting to socket:', error);
-		}
-	}
-	return socket;
 };
