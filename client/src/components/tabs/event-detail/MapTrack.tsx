@@ -12,7 +12,7 @@ export default function MapTrack() {
 					<div className='text-center text-muted-foreground'>
 						<MapPin className='w-12 h-12 mx-auto mb-2' />
 						<p>Map visualization will be displayed here</p>
-						<p className='text-sm'>Integration with mapping service pending</p>
+						<p className='text-sm'>No GPS data yet</p>
 					</div>
 				</div>
 			</CardContent>

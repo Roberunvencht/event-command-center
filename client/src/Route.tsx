@@ -24,6 +24,8 @@ import Logout from './pages/auth/Logout';
 import ProtectedRoute from './components/ProtectedRoute';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Devices from './pages/Devices';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 
 const router = createBrowserRouter([
 	/* ------------------ Auth Routes ------------------ */
@@ -38,6 +40,14 @@ const router = createBrowserRouter([
 	{
 		path: '/logout',
 		element: <Logout />,
+	},
+	{
+		path: '/forgot-password',
+		element: <ForgotPassword />,
+	},
+	{
+		path: '/reset-password/:token',
+		element: <ResetPassword />,
 	},
 
 	/* ------------------ Admin Routes ------------------ */

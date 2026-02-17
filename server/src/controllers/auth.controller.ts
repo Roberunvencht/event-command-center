@@ -279,10 +279,13 @@ export const resetPasswordHandler = asyncHandler(async (req, res) => {
 	// Hash token to compare with DB
 	const hashedToken = hashCrypto((token as string) ?? '');
 
+	// TODO: fix this
 	const user = await UserModel.findOne({
 		resetPasswordToken: hashedToken,
-		resetPasswordExpires: { $gt: new Date() },
+		// resetPasswordExpires: { $gt: new Date() },
 	});
+
+	console.log(user);
 
 	appAssert(user, BAD_REQUEST, 'Invalid or expired token');
 

@@ -5,6 +5,7 @@ import { getSocket } from '@/services/socket';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import MapTrack from './tabs/event-detail/MapTrack';
 // import RedDot from '/images/red-dot.png';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -38,7 +39,7 @@ export const LiveMap = () => {
 		};
 	}, []);
 
-	if (!position) return <div>No GPS data yet</div>;
+	if (!position) return <MapTrack />;
 
 	return (
 		<MapContainer
