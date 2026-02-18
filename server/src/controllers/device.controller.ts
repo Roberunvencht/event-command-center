@@ -6,6 +6,9 @@ import { io } from '../server';
 import CustomResponse from '../utils/response';
 import { asyncHandler, generateCypto } from '../utils/utils';
 
+/**
+ * @route POST /api/v1/device/telemetry
+ */
 export const deviceTelemetryController = asyncHandler(async (req, res) => {
 	const { deviceToken, gps, heartRate, emg } = req.body;
 
@@ -61,6 +64,9 @@ export const deviceTelemetryController = asyncHandler(async (req, res) => {
 	res.status(OK).json({ success: true });
 });
 
+/**
+ * @route GET /api/v1/device
+ */
 export const getDevices = asyncHandler(async (req, res) => {
 	const devices = await DeviceModel.find().populate('registration');
 
@@ -90,6 +96,9 @@ export const createDevice = asyncHandler(async (req, res) => {
 	});
 });
 
+/**
+ * @route DELETE /api/v1/device
+ */
 export const removeDevice = asyncHandler(async (req, res) => {
 	const { deviceID } = req.params;
 

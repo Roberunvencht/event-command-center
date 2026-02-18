@@ -8,6 +8,9 @@ import { registrationSchema } from '../schemas/registration.schema';
 import CustomResponse from '../utils/response';
 import { asyncHandler } from '../utils/utils';
 
+/**
+ * @route POST /api/v1/event/:eventID/register
+ */
 export const registerHandler = asyncHandler(async (req, res) => {
 	const { eventID } = req.params;
 	appAssert(typeof eventID === 'string', BAD_REQUEST, 'Invalid event ID');
@@ -60,7 +63,7 @@ export const registerHandler = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route
+ * @route GET /api/v1/registration
  * query: userID: string | eventID: string
  */
 export const getRegistrationsHander = asyncHandler(async (req, res) => {

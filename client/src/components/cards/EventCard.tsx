@@ -10,6 +10,12 @@ import { Event } from '@/types/event';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import axiosInstance from '@/api/axios';
+import { useToast } from '@/hooks/use-toast';
+import ConfirmDialog from '../ConfirmDialog';
+import { queryClient } from '@/main';
+import { QUERY_KEYS } from '@/constants';
+import { EditEventDialog } from '../modals/EditEventModal';
 
 type EventCardProps = {
 	event: Event;
@@ -17,6 +23,7 @@ type EventCardProps = {
 
 export default function EventCard({ event }: EventCardProps) {
 	const navigate = useNavigate();
+	const { toast } = useToast();
 
 	const distances = event.raceCategories.map((c) => c.distanceKm);
 	const minDistance = Math.min(...distances);
@@ -36,6 +43,26 @@ export default function EventCard({ event }: EventCardProps) {
 		minDistance === maxDistance
 			? `${minDistance} km`
 			: `${minDistance}–${maxDistance} km`;
+
+	const handleDelete = async () => {
+		try {
+			await axiosInstance.delete(`/event/${event._id}`);
+
+			toast({
+				title: 'Event deleted',
+				description: 'Your event has been deleted successfully.',
+			});
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EVENT] });
+		} catch (error) {
+			console.error('Error deleting event:', error);
+			toast({
+				variant: 'destructive',
+				title: 'Error',
+				description:
+					error.message || 'An error occurred while deleting the event.',
+			});
+		}
+	};
 
 	return (
 		<div className='flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors gap-4'>
@@ -82,11 +109,19 @@ export default function EventCard({ event }: EventCardProps) {
 					</DropdownMenuTrigger>
 
 					<DropdownMenuContent align='end'>
-						<DropdownMenuItem>Edit Event</DropdownMenuItem>
+						<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+							<EditEventDialog
+								event={event as any}
+								trigger={<button>Edit Event</button>}
+							/>
+						</DropdownMenuItem>
 						<DropdownMenuItem>Manage Participants</DropdownMenuItem>
 						<DropdownMenuItem>View Results</DropdownMenuItem>
 						<DropdownMenuItem className='text-destructive'>
-							Delete Event
+							<ConfirmDialog
+								onConfirm={handleDelete}
+								trigger={<button>Delete Event</button>}
+							/>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

@@ -25,7 +25,6 @@ import userRoutes from './routes/user.route';
 import registrationRoutes from './routes/registration.route';
 import paymentRoutes from './routes/payment.route';
 import deviceRoutes from './routes/device.route';
-import webhookRoutes from './routes/webhook.route';
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
@@ -35,16 +34,9 @@ app.use('/api/v1/event', eventsRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/registration', registrationRoutes);
 app.use('/api/v1/payment', paymentRoutes);
-app.use('/api/v1/webhook', webhookRoutes);
 
 // Error handlers
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 export default app;
-
-// if (NODE_ENV === 'development') {
-// 	app.listen(Number(PORT), () => {
-// 		console.log(`Server is running on http://localhost:${PORT}`);
-// 	});
-// }

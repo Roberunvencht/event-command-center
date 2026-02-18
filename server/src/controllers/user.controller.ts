@@ -4,7 +4,7 @@ import CustomResponse from '../utils/response';
 import { asyncHandler } from '../utils/utils';
 
 /**
- * @route PATCH /api/v1/auth/me - Update current user's profile
+ * @route PATCH /api/v1/user - Update current user's profile
  */
 export const updateProfileHandler = asyncHandler(async (req, res) => {
 	const user = req.user;

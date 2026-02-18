@@ -2,12 +2,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search, Filter } from 'lucide-react';
-import CreateEvent from '@/components/forms/CreateEvent';
 import EventCard from '@/components/cards/EventCard';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
 import { Event } from '@/types/event';
 import { QUERY_KEYS } from '@/constants';
+import { CreateEventDialog } from '@/components/modals/CreateEventModal';
 
 export default function Events() {
 	const { data: events } = useQuery({
@@ -18,36 +18,6 @@ export default function Events() {
 		},
 	});
 
-	// const events = [
-	// 	{
-	// 		id: 1,
-	// 		name: 'City Marathon 2024',
-	// 		date: 'Jan 15, 2024',
-	// 		location: 'Downtown',
-	// 		participants: 420,
-	// 		status: 'upcoming' as const,
-	// 		distance: '42.2 km',
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		name: 'Half Marathon Challenge',
-	// 		date: 'Jan 10, 2024',
-	// 		location: 'Park Lane',
-	// 		participants: 267,
-	// 		status: 'active' as const,
-	// 		distance: '21.1 km',
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		name: 'Weekend Sprint',
-	// 		date: 'Dec 20, 2023',
-	// 		location: 'City Center',
-	// 		participants: 189,
-	// 		status: 'finished' as const,
-	// 		distance: '10 km',
-	// 	},
-	// ];
-
 	return (
 		<div className='space-y-6 animate-appear'>
 			<div className='flex items-center justify-between'>
@@ -55,7 +25,7 @@ export default function Events() {
 					<h1 className='text-3xl font-bold text-foreground mb-2'>Events</h1>
 					<p className='text-muted-foreground'>Manage all your race events</p>
 				</div>
-				<CreateEvent />
+				<CreateEventDialog />
 			</div>
 
 			<Card>

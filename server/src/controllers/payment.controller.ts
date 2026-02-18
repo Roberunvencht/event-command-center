@@ -14,6 +14,9 @@ import {
 import CustomResponse from '../utils/response';
 import { asyncHandler } from '../utils/utils';
 
+/**
+ * @route POST /api/v1/payment/create
+ */
 export const createCheckoutSession = asyncHandler(async (req, res) => {
 	const { registrationId } = req.body;
 	const userId = req.user!._id;
@@ -59,6 +62,9 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
 	res.json({ checkoutUrl });
 });
 
+/**
+ * @route POST /api/v1/payment/verify
+ */
 export const verifyCheckoutSession = asyncHandler(async (req, res) => {
 	const user = req.user;
 	const { registrationId } = req.body;
