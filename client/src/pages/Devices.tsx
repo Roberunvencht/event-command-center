@@ -144,7 +144,7 @@ export default function Devices() {
 											</TableCell>
 
 											<TableCell>
-												{device.registration === undefined ? (
+												{device.registration === null ? (
 													<span className='text-green-600 font-medium'>
 														Available
 													</span>
@@ -172,7 +172,7 @@ export default function Devices() {
 
 														<DropdownMenuItem>Edit Device</DropdownMenuItem>
 
-														{device.registration !== undefined && (
+														{device.registration !== null && (
 															<DropdownMenuItem>
 																<button
 																	onClick={() => handleUnassign(device._id)}

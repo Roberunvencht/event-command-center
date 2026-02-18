@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { FRONTEND_URL } from '../constant/env';
 import { BAD_REQUEST, NOT_FOUND } from '../constant/http';
 import appAssert from '../errors/app-assert';
@@ -71,68 +72,115 @@ export const verifyCheckoutSession = asyncHandler(async (req, res) => {
 
 	appAssert(registrationId, BAD_REQUEST, 'Registration ID is required');
 
-	const registration = await RegistrationModel.findById(registrationId);
+	const registration = await RegistrationModel.findOne(
+		{
+			_id: registrationId,
+		},
+		null,
+	);
+
 	appAssert(registration, NOT_FOUND, 'Registration not found');
 
-	const payment = await PaymentModel.findOne({
-		user: user._id,
-		registration: registration._id,
-	});
+	const payment = await PaymentModel.findOne(
+		{
+			user: user._id,
+			registration: registration._id,
+		},
+		null,
+	);
 
 	appAssert(payment, NOT_FOUND, 'Payment record not found');
 
+	// If already paid → exit safely
 	if (payment.status === 'paid') {
 		res.json(new CustomResponse(true, true, 'Payment already confirmed'));
 		return;
 	}
 
-	// check if user has already paid using paymongo
+	// Check PayMongo
 	const { hasPaid, activeCheckoutUrl } = await checkIfUserAlreadyPaid([
 		payment.checkoutSessionId,
 	]);
 
-	if (hasPaid) {
-		payment.status = 'paid';
-		payment.paidAt = new Date();
-		await payment.save();
-
-		registration.status = 'confirmed';
-		await registration.save();
-
-		// update event race category registered count
-		const event = await EventModel.findById(registration.event);
-
-		if (event) {
-			const raceCategory = event.raceCategories.find(
-				(rc) => rc._id.toString() === registration.raceCategory?.toString(),
-			);
-
-			if (raceCategory) {
-				raceCategory.registeredCount = (raceCategory.registeredCount || 0) + 1;
-
-				await event.save();
-			}
-		}
-
-		// Find available device
-		const device = await DeviceModel.findOne({
-			registration: null,
-			isActive: true,
-		});
-
-		if (device) {
-			// Assign device
-			device.registration = registration._id;
-			await device.save();
-
-			// Optionally store reference in registration
-			registration.device = device._id;
-			await registration.save();
-		}
-
-		res.json(new CustomResponse(true, true, 'Payment successful'));
+	if (!hasPaid) {
+		res.json(new CustomResponse(true, activeCheckoutUrl, 'Payment pending'));
 		return;
 	}
 
-	res.json(new CustomResponse(true, activeCheckoutUrl, 'Payment pending'));
+	/**
+	 * 🔥 CRITICAL: Atomic payment status update
+	 * Only update if status is NOT already paid
+	 */
+	const updatedPayment = await PaymentModel.findOneAndUpdate(
+		{
+			_id: payment._id,
+			status: { $ne: 'paid' },
+		},
+		{
+			$set: {
+				status: 'paid',
+				paidAt: new Date(),
+			},
+		},
+		{ new: true },
+	);
+
+	// If null → another request already updated it
+	if (!updatedPayment) {
+		res.json(new CustomResponse(true, true, 'Payment already processed'));
+		return;
+	}
+
+	/**
+	 * Confirm registration (only if still pending)
+	 */
+	await RegistrationModel.updateOne(
+		{
+			_id: registration._id,
+			status: { $ne: 'confirmed' },
+		},
+		{
+			$set: { status: 'confirmed' },
+		},
+	);
+
+	/**
+	 * Atomic increment of registered count
+	 */
+	await EventModel.updateOne(
+		{
+			_id: registration.event as string,
+			'raceCategories._id': registration.raceCategory,
+		},
+		{
+			$inc: {
+				'raceCategories.$.registeredCount': 1,
+			},
+		},
+	);
+
+	/**
+	 * Atomic device assignment
+	 */
+	const device = await DeviceModel.findOneAndUpdate(
+		{
+			registration: null,
+			isActive: true,
+		},
+		{
+			$set: {
+				registration: registration._id,
+			},
+		},
+		{ new: true },
+	);
+
+	if (device) {
+		await RegistrationModel.updateOne(
+			{ _id: registration._id },
+			{ $set: { device: device._id } },
+		);
+	}
+
+	res.json(new CustomResponse(true, true, 'Payment successful'));
 });

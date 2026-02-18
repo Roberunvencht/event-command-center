@@ -14,7 +14,11 @@ export type PopulatedDevice = Device & {
 
 const DeviceSchema = new mongoose.Schema<Device>({
 	name: { type: String, required: true },
-	registration: { type: mongoose.Schema.Types.ObjectId, ref: 'Registration' },
+	registration: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Registration',
+		default: null,
+	},
 	deviceToken: { type: String, required: true, unique: true },
 	isActive: { type: Boolean, default: true },
 });

@@ -45,7 +45,7 @@ export default function PaymentSuccess() {
 		};
 
 		verifyPayment();
-	}, [registrationId, navigate]);
+	}, [registrationId]);
 
 	return (
 		<div className='flex flex-col items-center justify-center pt-40'>

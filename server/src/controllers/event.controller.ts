@@ -24,7 +24,7 @@ export const createEventHandler = asyncHandler(async (req, res) => {
  * @route GET /api/v1/event
  */
 export const getEventsHandler = asyncHandler(async (req, res) => {
-	const events = await EventModel.find();
+	const events = await EventModel.find().sort({ createdAt: -1 });
 
 	res.json(new CustomResponse(true, events, 'Events fetched successfully'));
 });

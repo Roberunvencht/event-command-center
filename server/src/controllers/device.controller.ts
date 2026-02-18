@@ -113,7 +113,7 @@ export const unassignDevice = asyncHandler(async (req, res) => {
 
 	const device = await DeviceModel.findByIdAndUpdate(
 		deviceID,
-		{ registration: null },
+		{ registration: null, isActive: false },
 		{ new: true },
 	);
 	appAssert(device, BAD_REQUEST, 'Device not found');
