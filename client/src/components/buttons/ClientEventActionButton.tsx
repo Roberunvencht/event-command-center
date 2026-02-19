@@ -1,8 +1,8 @@
 import { Registration } from '@/types/registration';
 import axiosInstance from '@/api/axios';
 import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { RegisterEventDialog } from './forms/RegisterEventForm';
+import { Button } from '../ui/button';
+import { RegisterEventDialog } from '../forms/RegisterEventForm';
 import { Event } from '@/types/event';
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/constants';
@@ -12,7 +12,7 @@ type EventActionButtonProps = {
 	event: Event;
 };
 
-export function EventActionButton({ event }: EventActionButtonProps) {
+export function ClientEventActionButton({ event }: EventActionButtonProps) {
 	const [loading, setLoading] = useState(false);
 	const { user } = useUserStore((state) => state);
 

@@ -30,3 +30,7 @@ export const createEventSchema = z.object({
 		.array(raceCategorySchema)
 		.min(1, 'At least one category required'),
 });
+
+export const updateEventStatusSchema = z.object({
+	status: z.enum(['upcoming', 'active', 'finished', 'archived', 'stopped']),
+});

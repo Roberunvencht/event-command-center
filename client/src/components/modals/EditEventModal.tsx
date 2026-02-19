@@ -15,10 +15,17 @@ import { Button } from '../ui/button';
 
 type EditEventDialogProps = {
 	event: Partial<EventFormValues> & { _id: string };
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 	trigger?: React.ReactNode;
 };
 
-export function EditEventDialog({ event, trigger }: EditEventDialogProps) {
+export function EditEventDialog({
+	event,
+	open,
+	onOpenChange,
+	trigger,
+}: EditEventDialogProps) {
 	const { toast } = useToast();
 
 	const handleUpdate = async (values: EventFormValues) => {
@@ -45,10 +52,8 @@ export function EditEventDialog({ event, trigger }: EditEventDialogProps) {
 	};
 
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				{trigger ? trigger : <Button variant='outline'>Edit</Button>}
-			</DialogTrigger>
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogTrigger asChild>{trigger ? trigger : null}</DialogTrigger>
 
 			<DialogContent className='max-w-3xl max-h-[90vh] overflow-y-auto'>
 				<DialogHeader>

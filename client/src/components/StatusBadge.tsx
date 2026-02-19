@@ -11,7 +11,8 @@ type StatusType =
 	| 'rejected'
 	| 'confirmed'
 	| 'completed'
-	| 'archived';
+	| 'archived'
+	| 'stopped';
 
 interface StatusBadgeProps {
 	status: StatusType;
@@ -35,6 +36,7 @@ const statusConfig: Record<
 	confirmed: { label: 'Confirmed', variant: 'default' },
 	completed: { label: 'Completed', variant: 'secondary' },
 	archived: { label: 'Archived', variant: 'secondary' },
+	stopped: { label: 'Stopped', variant: 'destructive' },
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {

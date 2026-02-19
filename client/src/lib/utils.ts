@@ -68,6 +68,6 @@ function formatDateTimeLocal(dateString: string) {
 	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function formatDateForInput(dateString: string) {
+export function formatDateForInput(dateString: string) {
 	return dateString.split('T')[0];
 }

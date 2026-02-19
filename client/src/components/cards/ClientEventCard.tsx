@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { StatusBadge } from '../StatusBadge';
 import { format } from 'date-fns';
 import { Registration } from '@/types/registration';
-import { EventActionButton } from '../EventActionButton';
+import { ClientEventActionButton } from '../buttons/ClientEventActionButton';
 
 type ClientEventCardProps = {
 	event: Event;
@@ -75,7 +75,7 @@ export default function ClientEventCard({
 						<Button asChild variant='outline' size='sm'>
 							<Link to={`/client/events/${event._id}`}>View Details</Link>
 						</Button>
-						<EventActionButton event={event} />
+						<ClientEventActionButton event={event} />
 					</div>
 				</div>
 			</CardContent>

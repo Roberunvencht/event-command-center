@@ -16,12 +16,14 @@ import ConfirmDialog from '../ConfirmDialog';
 import { queryClient } from '@/main';
 import { QUERY_KEYS } from '@/constants';
 import { EditEventDialog } from '../modals/EditEventModal';
+import { useState } from 'react';
 
 type EventCardProps = {
 	event: Event;
 };
 
 export default function EventCard({ event }: EventCardProps) {
+	const [editOpen, setEditOpen] = useState(false);
 	const navigate = useNavigate();
 	const { toast } = useToast();
 
@@ -101,6 +103,12 @@ export default function EventCard({ event }: EventCardProps) {
 					View Details
 				</Button>
 
+				<EditEventDialog
+					event={event}
+					open={editOpen}
+					onOpenChange={setEditOpen}
+				/>
+
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant='ghost' size='sm'>
@@ -109,11 +117,13 @@ export default function EventCard({ event }: EventCardProps) {
 					</DropdownMenuTrigger>
 
 					<DropdownMenuContent align='end'>
-						<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-							<EditEventDialog
-								event={event as any}
-								trigger={<button>Edit Event</button>}
-							/>
+						<DropdownMenuItem
+							onSelect={(e) => {
+								e.preventDefault();
+								setEditOpen(true);
+							}}
+						>
+							<button className='w-full text-start'>Edit</button>
 						</DropdownMenuItem>
 						<DropdownMenuItem>Manage Participants</DropdownMenuItem>
 						<DropdownMenuItem>View Results</DropdownMenuItem>

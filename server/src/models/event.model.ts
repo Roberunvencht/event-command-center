@@ -1,6 +1,11 @@
 import { Schema, model, Types } from 'mongoose';
 
-export type EventStatus = 'upcoming' | 'active' | 'finished' | 'archived';
+export type EventStatus =
+	| 'upcoming'
+	| 'active'
+	| 'finished'
+	| 'archived'
+	| 'stopped';
 
 export type RaceCategory = {
 	_id: string;

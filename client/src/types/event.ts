@@ -1,11 +1,16 @@
-export type EventStatus = 'upcoming' | 'active' | 'finished' | 'archived';
+export type EventStatus =
+	| 'upcoming'
+	| 'active'
+	| 'finished'
+	| 'archived'
+	| 'stopped';
 
 export type RaceCategory = {
 	_id: string;
 	name: string;
 	distanceKm: number;
 	cutoffTime: number; // minutes
-	gunStartTime: Date;
+	gunStartTime: string;
 	price: number;
 	slots: number;
 	registeredCount: number;
@@ -17,7 +22,7 @@ export type Event = {
 	name: string;
 	description: string;
 	status: EventStatus;
-	date: Date;
+	date: string;
 	startTime: string;
 	endTime: string;
 	location: {
@@ -33,9 +38,9 @@ export type Event = {
 	raceCategories: RaceCategory[];
 	registration: {
 		isOpen: boolean;
-		opensAt: Date;
-		closesAt: Date;
+		opensAt: string;
+		closesAt: string;
 	};
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 };

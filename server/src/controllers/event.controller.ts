@@ -1,7 +1,10 @@
 import { NOT_FOUND } from '../constant/http';
 import appAssert from '../errors/app-assert';
 import EventModel from '../models/event.model';
-import { createEventSchema } from '../schemas/event.schema';
+import {
+	createEventSchema,
+	updateEventStatusSchema,
+} from '../schemas/event.schema';
 import CustomResponse from '../utils/response';
 import { asyncHandler } from '../utils/utils';
 
@@ -81,4 +84,29 @@ export const deleteEventHandler = asyncHandler(async (req, res) => {
 	await EventModel.findByIdAndDelete(eventID);
 
 	res.json(new CustomResponse(true, null, 'Event deleted successfully'));
+});
+
+/**
+ * @route PATCH /api/v1/event/:eventID/status
+ */
+export const editStatusEventHandler = asyncHandler(async (req, res) => {
+	const { eventID } = req.params;
+	const body = updateEventStatusSchema.parse(req.body);
+
+	const event = await EventModel.findById(eventID);
+	appAssert(event, NOT_FOUND, 'Event not found');
+
+	const updatedEvent = await EventModel.findByIdAndUpdate(
+		eventID,
+		{
+			status: body.status,
+		},
+		{
+			new: true,
+		},
+	);
+
+	res.json(
+		new CustomResponse(true, updatedEvent, 'Event status updated successfully'),
+	);
 });
