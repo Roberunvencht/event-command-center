@@ -79,7 +79,7 @@ export const getRegistrationsHander = asyncHandler(async (req, res) => {
 		filters.event = eventID;
 	}
 
-	const registrations = await RegistrationModel.find(filters)
+	const registrations = await RegistrationModel.findOne(filters)
 		.populate('user')
 		.populate('event')
 		.populate('payment')

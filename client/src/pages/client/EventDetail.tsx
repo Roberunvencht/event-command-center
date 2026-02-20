@@ -79,7 +79,7 @@ export default function ClientEventDetail() {
 			{event && (
 				<div>
 					<EventFullDetails event={event} />
-					<RaceCategoryTable categories={event.raceCategories} />
+					<RaceCategoryTable categories={event.raceCategories} event={event} />
 				</div>
 			)}
 

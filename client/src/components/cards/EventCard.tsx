@@ -117,14 +117,16 @@ export default function EventCard({ event }: EventCardProps) {
 					</DropdownMenuTrigger>
 
 					<DropdownMenuContent align='end'>
-						<DropdownMenuItem
-							onSelect={(e) => {
-								e.preventDefault();
-								setEditOpen(true);
-							}}
-						>
-							<button className='w-full text-start'>Edit</button>
-						</DropdownMenuItem>
+						{event.status === 'upcoming' && (
+							<DropdownMenuItem
+								onSelect={(e) => {
+									e.preventDefault();
+									setEditOpen(true);
+								}}
+							>
+								<button className='w-full text-start'>Edit</button>
+							</DropdownMenuItem>
+						)}
 						<DropdownMenuItem>Manage Participants</DropdownMenuItem>
 						<DropdownMenuItem>View Results</DropdownMenuItem>
 						<DropdownMenuItem className='text-destructive'>

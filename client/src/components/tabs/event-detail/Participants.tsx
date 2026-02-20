@@ -20,19 +20,12 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 type ParticipantsProps = {
 	participants: Participant[];
 	setParticipants: React.Dispatch<React.SetStateAction<Participant[]>>;
-	selectedParticipant: Participant | null;
-	setSelectedParticipant: React.Dispatch<
-		React.SetStateAction<Participant | null>
-	>;
 	event: Event;
 };
 
 export default function Participants({
 	participants,
 	setParticipants,
-	selectedParticipant,
-	setSelectedParticipant,
-	event,
 }: ParticipantsProps) {
 	const [searchQuery, setSearchQuery] = useState('');
 	const { toast } = useToast();

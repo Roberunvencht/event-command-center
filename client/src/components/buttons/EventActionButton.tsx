@@ -24,7 +24,7 @@ export default function EventActionButton({ event }: EventActionButtonProps) {
 			});
 
 			toast({
-				title: 'Event started',
+				title: 'Event updated',
 				description: 'Event has been updated successfully.',
 			});
 			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EVENT] });

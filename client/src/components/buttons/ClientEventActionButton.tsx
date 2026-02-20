@@ -16,19 +16,19 @@ export function ClientEventActionButton({ event }: EventActionButtonProps) {
 	const [loading, setLoading] = useState(false);
 	const { user } = useUserStore((state) => state);
 
-	const { data: userRegistrations } = useQuery({
-		queryKey: [QUERY_KEYS.REGISTRATIONS, user._id],
-		queryFn: async (): Promise<Registration[]> => {
+	const { data: registration } = useQuery({
+		queryKey: [
+			QUERY_KEYS.REGISTRATIONS,
+			{ userID: user._id, eventID: event._id },
+		],
+		queryFn: async (): Promise<Registration> => {
 			const { data } = await axiosInstance.get(`/registration`, {
-				params: { user: user._id },
+				params: { userID: user._id, eventID: event._id },
 			});
 			return data.data;
 		},
 	});
 
-	const registration = userRegistrations?.find(
-		(r) => r.event._id === event._id,
-	);
 	const handlePayment = async () => {
 		if (!registration) return;
 		setLoading(true);

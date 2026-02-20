@@ -33,6 +33,18 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
 	);
 	appAssert(raceCategory, BAD_REQUEST, 'Race category not found');
 
+	const pendingPayment = await PaymentModel.findOne({
+		registration: registration._id,
+		event: event._id,
+		user: userId,
+		status: 'pending',
+	});
+
+	if (pendingPayment) {
+		res.json({ checkoutUrl: pendingPayment.checkoutUrl });
+		return;
+	}
+
 	const checkout = await createPaymongoCheckout({
 		amount: raceCategory.price,
 		successUrl: `${FRONTEND_URL}/client/payment/success/?registrationId=${registration._id}&eventId=${event._id}&userId=${userId}`,

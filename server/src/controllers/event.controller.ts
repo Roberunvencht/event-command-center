@@ -52,12 +52,21 @@ export const editEventHandler = asyncHandler(async (req, res) => {
 	const { eventID } = req.params;
 	const body = createEventSchema.parse(req.body);
 
+	const event = await EventModel.findById(eventID);
+	appAssert(event, NOT_FOUND, 'Event not found');
+
+	if (body.raceCategories) {
+		body.raceCategories = body.raceCategories.map((cat, index) => ({
+			...cat,
+			registeredCount: event.raceCategories[index]?.registeredCount ?? 0,
+			slots: event.raceCategories[index]?.slots ?? 0,
+			_id: event.raceCategories[index]?._id,
+		}));
+	}
+
 	const filteredBody = Object.fromEntries(
 		Object.entries(body).filter(([, value]) => value !== undefined),
 	);
-
-	const event = await EventModel.findById(eventID);
-	appAssert(event, NOT_FOUND, 'Event not found');
 
 	const updatedEvent = await EventModel.findByIdAndUpdate(
 		eventID,

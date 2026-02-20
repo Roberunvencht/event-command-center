@@ -39,7 +39,10 @@ export default function EventDetail() {
 		<div className='space-y-6 animate-appear'>
 			{eventDetail && <EventFullDetails event={eventDetail} />}
 			{eventDetail && (
-				<RaceCategoryTable categories={eventDetail.raceCategories} />
+				<RaceCategoryTable
+					categories={eventDetail.raceCategories}
+					event={eventDetail}
+				/>
 			)}
 
 			<Tabs defaultValue='participants' className='w-full'>
@@ -80,8 +83,6 @@ export default function EventDetail() {
 							event={eventDetail}
 							participants={participants}
 							setParticipants={setParticipants}
-							selectedParticipant={selectedParticipant}
-							setSelectedParticipant={setSelectedParticipant}
 						/>
 					)}
 				</TabsContent>
