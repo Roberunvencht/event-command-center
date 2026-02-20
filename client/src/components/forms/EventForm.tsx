@@ -15,7 +15,6 @@ import {
 } from '../ui/form';
 import { createEventSchema } from '@/schemas/event.schema';
 import { formatDatesForInput } from '@/lib/utils';
-import { useEffect } from 'react';
 
 export type EventFormValues = z.infer<typeof createEventSchema>;
 

@@ -108,7 +108,7 @@ export const verifyCheckoutSession = asyncHandler(async (req, res) => {
 	}
 
 	/**
-	 * 🔥 CRITICAL: Atomic payment status update
+	 * CRITICAL: Atomic payment status update
 	 * Only update if status is NOT already paid
 	 */
 	const updatedPayment = await PaymentModel.findOneAndUpdate(

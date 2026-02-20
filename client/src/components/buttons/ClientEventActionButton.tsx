@@ -1,6 +1,6 @@
 import { Registration } from '@/types/registration';
 import axiosInstance from '@/api/axios';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import { RegisterEventDialog } from '../forms/RegisterEventForm';
 import { Event } from '@/types/event';
