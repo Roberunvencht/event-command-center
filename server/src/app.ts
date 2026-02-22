@@ -1,15 +1,15 @@
-import cookieParser from 'cookie-parser';
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import cookieParser from "cookie-parser";
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 dotenv.config();
 
-import connectToMongoDB from './database/mongodb';
-import { notFoundHandler } from './middlewares/not-found';
-import { errorHandler } from './middlewares/error';
-import { healthcheck } from './middlewares/healthcheck';
-import { corsOptions } from './utils/cors';
-import { auth } from './middlewares/auth';
+import connectToMongoDB from "./database/mongodb";
+import { notFoundHandler } from "./middlewares/not-found";
+import { errorHandler } from "./middlewares/error";
+import { healthcheck } from "./middlewares/healthcheck";
+import { corsOptions } from "./utils/cors";
+import { auth } from "./middlewares/auth";
 connectToMongoDB();
 
 const app = express();
@@ -17,23 +17,25 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.get('/', healthcheck);
+app.get("/", healthcheck);
 
-import authRoutes from './routes/auth.route';
-import eventsRoutes from './routes/event.routes';
-import userRoutes from './routes/user.route';
-import registrationRoutes from './routes/registration.route';
-import paymentRoutes from './routes/payment.route';
-import deviceRoutes from './routes/device.route';
+import authRoutes from "./routes/auth.route";
+import eventsRoutes from "./routes/event.routes";
+import userRoutes from "./routes/user.route";
+import registrationRoutes from "./routes/registration.route";
+import paymentRoutes from "./routes/payment.route";
+import deviceRoutes from "./routes/device.route";
+import telemetryRoutes from "./routes/telemetry.route";
 
 // Routes
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/device', deviceRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/device", deviceRoutes);
 app.use(auth);
-app.use('/api/v1/event', eventsRoutes);
-app.use('/api/v1/user', userRoutes);
-app.use('/api/v1/registration', registrationRoutes);
-app.use('/api/v1/payment', paymentRoutes);
+app.use("/api/v1/event", eventsRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/registration", registrationRoutes);
+app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/telemetry", telemetryRoutes);
 
 // Error handlers
 app.use(notFoundHandler);

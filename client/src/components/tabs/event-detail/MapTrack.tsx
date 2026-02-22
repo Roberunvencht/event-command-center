@@ -1,21 +1,297 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Play, Pause } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Polyline,
+  Tooltip,
+} from "react-leaflet";
+import L from "leaflet";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useParams } from "react-router-dom";
+import axiosInstance from "@/api/axios";
+import { useQuery } from "@tanstack/react-query";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+// Fix leaflet default icon issue
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+type TelemetryData = {
+  _id: string;
+  registration: {
+    _id: string;
+    user: {
+      name: string;
+      email: string;
+    };
+    raceCategory?: {
+      name: string;
+    };
+  };
+  gps: {
+    lat: number;
+    lon: number;
+  };
+  createdAt: string;
+};
+
+type GroupedTelemetry = {
+  [registrationId: string]: TelemetryData[];
+};
 
 export default function MapTrack() {
-	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>Race Route Map</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<div className='w-full h-[500px] bg-muted rounded-lg flex items-center justify-center'>
-					<div className='text-center text-muted-foreground'>
-						<MapPin className='w-12 h-12 mx-auto mb-2' />
-						<p>Map visualization will be displayed here</p>
-						<p className='text-sm'>No GPS data yet</p>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-	);
+  const { eventID } = useParams();
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
+  const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { data: telemetryPoints = [], isLoading } = useQuery({
+    queryKey: ["telemetry", eventID],
+    queryFn: async (): Promise<TelemetryData[]> => {
+      const { data } = await axiosInstance.get(`/telemetry/event/${eventID}`);
+      return data.data;
+    },
+    enabled: !!eventID,
+  });
+
+  const { groupedData, minTime, maxTime, defaultCenter } = useMemo(() => {
+    if (telemetryPoints.length === 0) {
+      return { groupedData: {}, minTime: 0, maxTime: 0, defaultCenter: null };
+    }
+
+    let min = new Date(telemetryPoints[0].createdAt).getTime();
+    let max = min;
+    let centroidLat = 0;
+    let centroidLon = 0;
+
+    const grouped: GroupedTelemetry = {};
+
+    telemetryPoints.forEach((t) => {
+      const time = new Date(t.createdAt).getTime();
+      if (time < min) min = time;
+      if (time > max) max = time;
+
+      centroidLat += t.gps.lat;
+      centroidLon += t.gps.lon;
+
+      const regId = t.registration._id;
+      if (!grouped[regId]) grouped[regId] = [];
+      grouped[regId].push(t);
+    });
+
+    centroidLat /= telemetryPoints.length;
+    centroidLon /= telemetryPoints.length;
+
+    // Sort each participant's track chronologically
+    Object.values(grouped).forEach((track) => {
+      track.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+    });
+
+    return {
+      groupedData: grouped,
+      minTime: min,
+      maxTime: max,
+      defaultCenter: [centroidLat, centroidLon] as [number, number],
+    };
+  }, [telemetryPoints]);
+
+  // Set initial slider position when data loads
+  useEffect(() => {
+    if (minTime > 0 && currentTime === 0) {
+      setCurrentTime(minTime);
+    }
+  }, [minTime, currentTime]);
+
+  // Playback Loop
+  useEffect(() => {
+    if (isPlaying) {
+      playIntervalRef.current = setInterval(() => {
+        setCurrentTime((prev) => {
+          // Advance time by real interval * playbackSpeed
+          const nextTime = prev + 100 * playbackSpeed;
+          if (nextTime >= maxTime) {
+            setIsPlaying(false);
+            return maxTime;
+          }
+          return nextTime;
+        });
+      }, 100); // Trigger every 100ms
+    } else if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current);
+    }
+
+    return () => {
+      if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+    };
+  }, [isPlaying, maxTime, playbackSpeed]);
+
+  const togglePlay = () => setIsPlaying(!isPlaying);
+
+  const handleSliderChange = (value: number[]) => {
+    setCurrentTime(value[0]);
+    if (isPlaying) setIsPlaying(false); // Pause while scrubbing
+  };
+
+  // Determine current position for each participant based on slider time
+  const getCurrentPositions = () => {
+    const positions: { track: TelemetryData[]; currentPoint: TelemetryData }[] =
+      [];
+
+    Object.values(groupedData).forEach((track) => {
+      // Find the last known point at or before the current time
+      let matchedPoint = track[0];
+      for (let i = 0; i < track.length; i++) {
+        if (new Date(track[i].createdAt).getTime() <= currentTime) {
+          matchedPoint = track[i];
+        } else {
+          break;
+        }
+      }
+
+      if (matchedPoint) {
+        positions.push({ track, currentPoint: matchedPoint });
+      }
+    });
+
+    return positions;
+  };
+
+  const positions = getCurrentPositions();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Race Route Replay</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className='w-full h-[500px] bg-muted flex items-center justify-center rounded-lg'>
+            <p className='text-muted-foreground animate-pulse'>
+              Loading Telemetry Map...
+            </p>
+          </div>
+        ) : telemetryPoints.length === 0 ? (
+          <div className='w-full h-[500px] bg-muted flex items-center justify-center rounded-lg'>
+            <p className='text-muted-foreground'>
+              No GPS data available for this event yet.
+            </p>
+          </div>
+        ) : (
+          <div className='flex flex-col gap-4'>
+            {defaultCenter && (
+              <MapContainer
+                center={defaultCenter}
+                zoom={14}
+                className='w-full h-[500px] rounded-lg z-0 border'
+              >
+                <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
+
+                {positions.map(({ track, currentPoint }) => {
+                  const latLngs = track.map(
+                    (t) => [t.gps.lat, t.gps.lon] as [number, number],
+                  );
+
+                  return (
+                    <div key={track[0].registration._id}>
+                      {/* Draw the full trail faded */}
+                      <Polyline
+                        positions={latLngs}
+                        color='hsl(var(--primary))'
+                        weight={3}
+                        opacity={0.3}
+                      />
+
+                      {/* Draw the runner's marker at the scrubbed time */}
+                      <Marker
+                        position={[currentPoint.gps.lat, currentPoint.gps.lon]}
+                      >
+                        <Tooltip
+                          permanent
+                          direction='top'
+                          className='font-semibold'
+                        >
+                          {currentPoint.registration.user.name.split(" ")[0]}
+                        </Tooltip>
+                      </Marker>
+                    </div>
+                  );
+                })}
+              </MapContainer>
+            )}
+
+            <div className='flex items-center gap-4 p-4 border rounded-lg bg-card mt-2'>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={togglePlay}
+                disabled={currentTime >= maxTime}
+              >
+                {isPlaying ? (
+                  <Pause className='w-4 h-4' />
+                ) : (
+                  <Play className='w-4 h-4' />
+                )}
+              </Button>
+
+              <div className='flex items-center'>
+                <Select
+                  value={playbackSpeed.toString()}
+                  onValueChange={(val) => setPlaybackSpeed(Number(val))}
+                >
+                  <SelectTrigger className='w-[110px]'>
+                    <SelectValue placeholder='Speed' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='1'>1x Speed</SelectItem>
+                    <SelectItem value='5'>5x Speed</SelectItem>
+                    <SelectItem value='10'>10x Speed</SelectItem>
+                    <SelectItem value='30'>30x Speed</SelectItem>
+                    <SelectItem value='60'>60x Speed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className='flex-1 flex flex-col gap-2'>
+                <Slider
+                  min={minTime}
+                  max={maxTime}
+                  step={1000} // Step by 1 second intervals for smoothness
+                  value={[currentTime]}
+                  onValueChange={handleSliderChange}
+                />
+                <div className='flex justify-between text-xs text-muted-foreground'>
+                  <span>{new Date(minTime).toLocaleTimeString()}</span>
+                  <span className='font-bold text-foreground text-sm'>
+                    {new Date(currentTime).toLocaleTimeString()}
+                  </span>
+                  <span>{new Date(maxTime).toLocaleTimeString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
