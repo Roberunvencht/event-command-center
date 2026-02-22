@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import EventModel from "../models/event.model";
 import UserModel from "../models/user.model";
 import RegistrationModel from "../models/registration.model";
@@ -76,11 +75,17 @@ export const seedTelemetry = async () => {
   try {
     console.log("--- Starting Telemetry Seeding ---");
 
+    const existingTelemetry = await TelemetryModel.find();
+    if (existingTelemetry.length > 0) {
+      console.log("Telemetry already exists. Skipping seed.");
+      return;
+    }
+
     // Force clear for test
-    await TelemetryModel.deleteMany({});
-    await RegistrationModel.deleteMany({ bibNumber: { $regex: /^BT21K-/ } });
-    await UserModel.deleteMany({ email: { $regex: /^runner.*@test\.com$/ } });
-    await EventModel.deleteMany({ name: "Bukidnon Trail Run" });
+    // await TelemetryModel.deleteMany({});
+    // await RegistrationModel.deleteMany({ bibNumber: { $regex: /^BT21K-/ } });
+    // await UserModel.deleteMany({ email: { $regex: /^runner.*@test\.com$/ } });
+    // await EventModel.deleteMany({ name: "Bukidnon Trail Run" });
 
     // 1. Create Bukidnon Trail Event
     const eventPayload: any = {
@@ -121,7 +126,7 @@ export const seedTelemetry = async () => {
     const passwordHash = await bcrypt.hash("password123", 10);
     const mockUsers = [
       {
-        name: "Runner One",
+        name: "Nick Xylan Melloria",
         email: "runner1@test.com",
         phone: 9111111111,
         password: passwordHash,
@@ -129,7 +134,7 @@ export const seedTelemetry = async () => {
         archived: false,
       },
       {
-        name: "Runner Two",
+        name: "Zoid Balba",
         email: "runner2@test.com",
         phone: 9222222222,
         password: passwordHash,
@@ -137,9 +142,17 @@ export const seedTelemetry = async () => {
         archived: false,
       },
       {
-        name: "Runner Three",
+        name: "Fern Asinero",
         email: "runner3@test.com",
         phone: 9333333333,
+        password: passwordHash,
+        role: "user" as const,
+        archived: false,
+      },
+      {
+        name: "Robert James Nahial",
+        email: "runner4@test.com",
+        phone: 9444444444,
         password: passwordHash,
         role: "user" as const,
         archived: false,
@@ -180,7 +193,7 @@ export const seedTelemetry = async () => {
 
     for (const reg of registrations) {
       // Offset start time slightly per runner
-      baseTime += Math.floor(Math.random() * 20000);
+      baseTime += Math.floor(Math.random() * 10000);
 
       // Each point represents roughly 5-10 minutes of running along the trail
       for (let i = 0; i < trailPoints.length; i++) {

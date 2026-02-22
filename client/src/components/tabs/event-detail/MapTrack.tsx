@@ -9,13 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Polyline,
-  Tooltip,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
 import L from "leaflet";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
@@ -54,6 +48,45 @@ type TelemetryData = {
 
 type GroupedTelemetry = {
   [registrationId: string]: TelemetryData[];
+};
+
+const COLORS = [
+  "#ef4444", // red
+  "#3b82f6", // blue
+  "#10b981", // emerald
+  "#f59e0b", // amber
+  "#8b5cf6", // violet
+  "#ec4899", // pink
+];
+
+const createCustomMarker = (color: string, name: string) => {
+  const shortName = name.split(" ")[0];
+
+  const html = `
+    <div style="position: relative; width: 14px; height: 14px; pointer-events: none;">
+      <!-- The dot -->
+      <div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); position: absolute; z-index: 10;"></div>
+      
+      <!-- The Callout -->
+      <div style="position: absolute; left: 7px; bottom: 7px; width: 80px; height: 40px; pointer-events: none; z-index: 11;">
+        <!-- The SVG Line -->
+        <svg width="80" height="30" style="position: absolute; bottom: 0; left: 0; overflow: visible;">
+          <path d="M 0 30 L 15 20 L 80 20" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <!-- The Name -->
+        <div style="position: absolute; bottom: 10px; left: 20px; color: black; font-size: 14px; font-family: sans-serif; white-space: nowrap; line-height: 1; text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white, 0px 1px 0px white, 0px -1px 0px white, 1px 0px 0px white, -1px 0px 0px white;">
+          ${shortName}
+        </div>
+      </div>
+    </div>
+  `;
+
+  return L.divIcon({
+    className: "bg-transparent border-none overflow-visible",
+    html,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
 };
 
 export default function MapTrack() {
@@ -207,17 +240,19 @@ export default function MapTrack() {
               >
                 <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
 
-                {positions.map(({ track, currentPoint }) => {
+                {positions.map(({ track, currentPoint }, index) => {
                   const latLngs = track.map(
                     (t) => [t.gps.lat, t.gps.lon] as [number, number],
                   );
+
+                  const color = COLORS[index % COLORS.length];
 
                   return (
                     <div key={track[0].registration._id}>
                       {/* Draw the full trail faded */}
                       <Polyline
                         positions={latLngs}
-                        color='hsl(var(--primary))'
+                        color={color}
                         weight={3}
                         opacity={0.3}
                       />
@@ -225,15 +260,11 @@ export default function MapTrack() {
                       {/* Draw the runner's marker at the scrubbed time */}
                       <Marker
                         position={[currentPoint.gps.lat, currentPoint.gps.lon]}
-                      >
-                        <Tooltip
-                          permanent
-                          direction='top'
-                          className='font-semibold'
-                        >
-                          {currentPoint.registration.user.name.split(" ")[0]}
-                        </Tooltip>
-                      </Marker>
+                        icon={createCustomMarker(
+                          color,
+                          currentPoint.registration.user.name,
+                        )}
+                      />
                     </div>
                   );
                 })}
