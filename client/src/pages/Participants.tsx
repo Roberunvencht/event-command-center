@@ -1,204 +1,232 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { StatusBadge } from '@/components/StatusBadge';
-import { Search, Filter, Download, UserPlus, MoreVertical } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Search, Filter, Download, UserPlus, MoreVertical } from "lucide-react";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '@/api/axios';
-import { Registration } from '@/types/registration';
-import { QUERY_KEYS } from '@/constants';
-import { useState, useMemo } from 'react';
-import { useUserStore } from '@/stores/user';
-import RegistrationDetailsModal from '@/components/modals/RegistrationDetailsModal';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axios";
+import { Registration } from "@/types/registration";
+import { QUERY_KEYS } from "@/constants";
+import { useState, useMemo } from "react";
+import { useUserStore } from "@/stores/user";
+import RegistrationDetailsModal from "@/components/modals/RegistrationDetailsModal";
+import AssignDeviceModal from "@/components/modals/AssignDeviceModal";
+import _ from "lodash";
 
 export default function Participants() {
-	const [searchParams] = useSearchParams();
-	const [searchTerm, setSearchTerm] = useState('');
-	const eventID = searchParams.get('eventID');
-	const { user } = useUserStore((state) => state);
-	const isAdmin = user?.role === 'admin';
+  const [openModal, setOpenModal] = useState(false);
+  const [openAssignModal, setOpenAssignModal] = useState(false);
+  const [selectedRegForAssign, setSelectedRegForAssign] =
+    useState<Registration | null>(null);
+  const [searchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState("");
+  const eventID = searchParams.get("eventID");
+  const { user } = useUserStore((state) => state);
+  const isAdmin = user?.role === "admin";
 
-	const { data: registrations = [], isLoading } = useQuery({
-		queryKey: [QUERY_KEYS.REGISTRATIONS, eventID],
-		queryFn: async (): Promise<Registration[]> => {
-			const params = new URLSearchParams();
-			if (eventID) {
-				params.append('eventID', eventID);
-			}
-			const { data } = await axiosInstance.get(
-				`/registration?${params.toString()}`,
-			);
-			return Array.isArray(data.data) ? data.data : [];
-		},
-	});
+  const { data: registrations = [], isLoading } = useQuery({
+    queryKey: [QUERY_KEYS.REGISTRATIONS, eventID],
+    queryFn: async (): Promise<Registration[]> => {
+      const params = new URLSearchParams();
+      if (eventID) {
+        params.append("eventID", eventID);
+      }
+      const { data } = await axiosInstance.get(
+        `/registration?${params.toString()}`,
+      );
+      return Array.isArray(data.data) ? data.data : [];
+    },
+  });
 
-	const filteredParticipants = useMemo(() => {
-		return registrations.filter(
-			(reg) =>
-				reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				reg.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				(reg.bibNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ??
-					false),
-		);
-	}, [registrations, searchTerm]);
+  const filteredParticipants = useMemo(() => {
+    return registrations.filter(
+      (reg) =>
+        reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (reg.bibNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+          false),
+    );
+  }, [registrations, searchTerm]);
 
-	console.log({ filteredParticipants });
+  return (
+    <div className='space-y-6 animate-appear'>
+      <div className='flex items-center justify-between'>
+        <div>
+          <h1 className='text-3xl font-bold text-foreground mb-2'>
+            Participants
+          </h1>
+          <p className='text-muted-foreground'>Manage all event participants</p>
+        </div>
+        {isAdmin && (
+          <div className='flex gap-2'>
+            <Button variant='outline' className='gap-2'>
+              <Download className='w-4 h-4' />
+              Export
+            </Button>
+            <Button className='gap-2'>
+              <UserPlus className='w-4 h-4' />
+              Add Participant
+            </Button>
+          </div>
+        )}
+      </div>
 
-	return (
-		<div className='space-y-6 animate-appear'>
-			<div className='flex items-center justify-between'>
-				<div>
-					<h1 className='text-3xl font-bold text-foreground mb-2'>
-						Participants
-					</h1>
-					<p className='text-muted-foreground'>Manage all event participants</p>
-				</div>
-				{isAdmin && (
-					<div className='flex gap-2'>
-						<Button variant='outline' className='gap-2'>
-							<Download className='w-4 h-4' />
-							Export
-						</Button>
-						<Button className='gap-2'>
-							<UserPlus className='w-4 h-4' />
-							Add Participant
-						</Button>
-					</div>
-				)}
-			</div>
+      <Card>
+        <CardContent className='p-6'>
+          <div className='flex flex-col sm:flex-row gap-4 mb-6'>
+            <div className='relative flex-1'>
+              <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
+              <Input
+                placeholder='Search by name, email, bib number...'
+                className='pl-9'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            {isAdmin && (
+              <Button variant='outline' className='gap-2'>
+                <Filter className='w-4 h-4' />
+                Filters
+              </Button>
+            )}
+          </div>
 
-			<Card>
-				<CardContent className='p-6'>
-					<div className='flex flex-col sm:flex-row gap-4 mb-6'>
-						<div className='relative flex-1'>
-							<Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
-							<Input
-								placeholder='Search by name, email, bib number...'
-								className='pl-9'
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-							/>
-						</div>
-						{isAdmin && (
-							<Button variant='outline' className='gap-2'>
-								<Filter className='w-4 h-4' />
-								Filters
-							</Button>
-						)}
-					</div>
-
-					<div className='rounded-lg border border-border overflow-hidden'>
-						<Table>
-							<TableHeader>
-								<TableRow className='bg-muted/50'>
-									<TableHead>Bib No.</TableHead>
-									<TableHead>Name</TableHead>
-									<TableHead>Email</TableHead>
-									<TableHead>Phone</TableHead>
-									<TableHead>Category</TableHead>
-									<TableHead>Shirt Size</TableHead>
-									<TableHead>Status</TableHead>
-									{isAdmin && (
-										<TableHead className='text-right'>Actions</TableHead>
-									)}
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{isLoading ? (
-									<TableRow>
-										<TableCell
-											colSpan={isAdmin ? 8 : 7}
-											className='text-center text-muted-foreground py-8'
-										>
-											Loading participants...
-										</TableCell>
-									</TableRow>
-								) : filteredParticipants.length === 0 ? (
-									<TableRow>
-										<TableCell
-											colSpan={isAdmin ? 8 : 7}
-											className='text-center text-muted-foreground py-8'
-										>
-											No participants found
-										</TableCell>
-									</TableRow>
-								) : (
-									filteredParticipants.map((registration) => (
-										<TableRow
-											key={registration._id}
-											className='hover:bg-muted/30'
-										>
-											<TableCell className='font-medium'>
-												{registration.bibNumber || '-'}
-											</TableCell>
-											<TableCell className='font-medium text-foreground'>
-												{registration.user.name}
-											</TableCell>
-											<TableCell className='text-muted-foreground'>
-												{registration.user.email}
-											</TableCell>
-											<TableCell className='text-muted-foreground'>
-												{registration.user.phone || '-'}
-											</TableCell>
-											<TableCell className='text-muted-foreground'>
-												{registration.raceCategory?.name || '-'}
-											</TableCell>
-											<TableCell className='text-muted-foreground'>
-												{registration.shirtSize}
-											</TableCell>
-											<TableCell>
-												<StatusBadge status={registration.status} />
-											</TableCell>
-											{isAdmin && (
-												<TableCell className='text-right'>
-													<DropdownMenu>
-														<DropdownMenuTrigger asChild>
-															<Button variant='ghost' size='sm'>
-																<MoreVertical className='w-4 h-4' />
-															</Button>
-														</DropdownMenuTrigger>
-														<DropdownMenuContent align='end'>
-															<DropdownMenuItem asChild>
-																<RegistrationDetailsModal
-																	registration={registration}
-																/>
-															</DropdownMenuItem>
-															<DropdownMenuItem>
-																Edit Participant
-															</DropdownMenuItem>
-															<DropdownMenuItem>
-																Assign Hardware
-															</DropdownMenuItem>
-															<DropdownMenuItem className='text-destructive'>
-																Remove
-															</DropdownMenuItem>
-														</DropdownMenuContent>
-													</DropdownMenu>
-												</TableCell>
-											)}
-										</TableRow>
-									))
-								)}
-							</TableBody>
-						</Table>
-					</div>
-				</CardContent>
-			</Card>
-		</div>
-	);
+          <div className='rounded-lg border border-border overflow-hidden'>
+            <Table>
+              <TableHeader>
+                <TableRow className='bg-muted/50'>
+                  <TableHead>Bib No.</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Shirt Size</TableHead>
+                  <TableHead>Status</TableHead>
+                  {isAdmin && (
+                    <TableHead className='text-right'>Actions</TableHead>
+                  )}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={isAdmin ? 8 : 7}
+                      className='text-center text-muted-foreground py-8'
+                    >
+                      Loading participants...
+                    </TableCell>
+                  </TableRow>
+                ) : filteredParticipants.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={isAdmin ? 8 : 7}
+                      className='text-center text-muted-foreground py-8'
+                    >
+                      No participants found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredParticipants.map((registration) => (
+                    <TableRow
+                      key={registration._id}
+                      className='hover:bg-muted/30'
+                    >
+                      <TableCell className='font-medium'>
+                        {registration.bibNumber || "--"}
+                      </TableCell>
+                      <TableCell className='font-medium text-foreground'>
+                        {_.startCase(registration.user.name)}
+                      </TableCell>
+                      <TableCell className='text-muted-foreground'>
+                        {registration.user.email}
+                      </TableCell>
+                      <TableCell className='text-muted-foreground'>
+                        {registration.user.phone || "--"}
+                      </TableCell>
+                      <TableCell className='text-muted-foreground'>
+                        {registration.raceCategory?.name || "--"}
+                      </TableCell>
+                      <TableCell className='text-muted-foreground'>
+                        {registration.shirtSize || "--"}
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={registration.status} />
+                      </TableCell>
+                      {isAdmin && (
+                        <TableCell className='text-right'>
+                          <RegistrationDetailsModal
+                            registration={registration}
+                            open={openModal}
+                            setOpen={setOpenModal}
+                          />
+                          {selectedRegForAssign && (
+                            <AssignDeviceModal
+                              registration={selectedRegForAssign}
+                              open={openAssignModal}
+                              setOpen={(open) => {
+                                setOpenAssignModal(open);
+                                if (!open) setSelectedRegForAssign(null);
+                              }}
+                            />
+                          )}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant='ghost' size='sm'>
+                                <MoreVertical className='w-4 h-4' />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end'>
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setOpenModal(true);
+                                }}
+                              >
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                Edit Participant
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setSelectedRegForAssign(registration);
+                                  setOpenAssignModal(true);
+                                }}
+                              >
+                                Assign Hardware
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className='text-destructive'>
+                                Remove
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

@@ -15,20 +15,17 @@ import { format } from 'date-fns';
 
 interface RegistrationDetailsModalProps {
 	registration: Registration;
+	open: boolean;
+	setOpen: (open: boolean) => void;
 }
 
 export default function RegistrationDetailsModal({
 	registration,
+	open,
+	setOpen,
 }: RegistrationDetailsModalProps) {
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<Button variant='ghost' size='sm' className='flex items-center gap-2'>
-					<Eye className='w-4 h-4' />
-					View Details
-				</Button>
-			</DialogTrigger>
-
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent className='max-h-[90vh] overflow-y-auto max-w-2xl'>
 				<DialogHeader>
 					<DialogTitle>Participant Registration Details</DialogTitle>
