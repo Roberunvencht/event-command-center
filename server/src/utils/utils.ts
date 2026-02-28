@@ -2,6 +2,7 @@ import { Request } from 'express';
 import crypto from 'crypto';
 import { HASH_ALGORITHM, HASH_ENCODING } from '../constant';
 import expressAsyncHandler from 'express-async-handler';
+import RegistrationModel from '../models/registration.model';
 
 export const asyncHandler = expressAsyncHandler;
 
@@ -69,4 +70,27 @@ export const getPasswordResetEmailTemplate = (resetURL: string) => {
 			</div>
 		</div>
 	`;
+};
+
+/**
+ * Generate a bib number based on race category distance.
+ * Example: 5km → 5000-5999, 10km → 10000-10999
+ */
+export const generateBibNumber = async (
+	distanceKm: number,
+): Promise<number> => {
+	const base = distanceKm * 1000; // e.g., 5 * 1000 = 5000
+	const max = base + 999;
+
+	// Find the highest existing bibNumber in this range
+	// NOTE: assumes bibNumber field exists in RegistrationModel
+	const highestBib = await RegistrationModel.findOne({
+		bibNumber: { $gte: base, $lte: max },
+	})
+		.sort({ bibNumber: -1 })
+		.select('bibNumber')
+		.lean()
+		.then((reg) => (reg?.bibNumber ? reg.bibNumber + 1 : base));
+
+	return highestBib;
 };

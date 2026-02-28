@@ -13,7 +13,7 @@ import {
 	createPaymongoCheckout,
 } from '../services/paymongo.service';
 import CustomResponse from '../utils/response';
-import { asyncHandler } from '../utils/utils';
+import { asyncHandler, generateBibNumber } from '../utils/utils';
 
 /**
  * @route POST /api/v1/payment/create
@@ -81,17 +81,20 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
 export const verifyCheckoutSession = asyncHandler(async (req, res) => {
 	const user = req.user;
 	const { registrationId } = req.body;
-
 	appAssert(registrationId, BAD_REQUEST, 'Registration ID is required');
 
-	const registration = await RegistrationModel.findOne(
-		{
-			_id: registrationId,
-		},
-		null,
-	);
-
+	const registration = await RegistrationModel.findById(registrationId);
 	appAssert(registration, NOT_FOUND, 'Registration not found');
+
+	// Fetch the event that contains the race category
+	const event = await EventModel.findById(registration.event);
+	appAssert(event, NOT_FOUND, 'Event not found');
+
+	// Find the race category inside the event
+	const raceCategory = event.raceCategories.find(
+		(rc) => rc._id.toString() === registration.raceCategory.toString(),
+	);
+	appAssert(raceCategory, NOT_FOUND, 'Race category not found');
 
 	const payment = await PaymentModel.findOne(
 		{
@@ -146,13 +149,20 @@ export const verifyCheckoutSession = asyncHandler(async (req, res) => {
 	/**
 	 * Confirm registration (only if still pending)
 	 */
+	// Only generate bibNumber if not already assigned
+	let bibNumber = registration.bibNumber;
+
+	if (!bibNumber) {
+		bibNumber = await generateBibNumber(raceCategory.distanceKm);
+	}
+
 	await RegistrationModel.updateOne(
+		{ _id: registration._id, status: { $ne: 'confirmed' } },
 		{
-			_id: registration._id,
-			status: { $ne: 'confirmed' },
-		},
-		{
-			$set: { status: 'confirmed' },
+			$set: {
+				status: 'confirmed',
+				bibNumber,
+			},
 		},
 	);
 

@@ -10,7 +10,7 @@ export type Registration = {
 	user: PopulatedDoc<IUser>;
 	event: PopulatedDoc<Event>;
 	raceCategory: RaceCategory;
-	bibNumber?: string;
+	bibNumber?: number;
 	shirtSize: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL';
 	emergencyContact: {
 		name: string;
@@ -62,7 +62,7 @@ const RegistrationSchema = new Schema<Registration>(
 		},
 
 		bibNumber: {
-			type: String,
+			type: Number,
 			unique: true,
 			sparse: true,
 		},
