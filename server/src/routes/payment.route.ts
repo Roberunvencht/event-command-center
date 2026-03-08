@@ -1,12 +1,14 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
-	createCheckoutSession,
-	verifyCheckoutSession,
-} from '../controllers/payment.controller';
+  createCheckoutSession,
+  markPaymentAsPaid,
+  verifyCheckoutSession,
+} from "../controllers/payment.controller";
 
 const router = Router();
 
-router.post('/create', createCheckoutSession);
-router.post('/verify', verifyCheckoutSession);
+router.post("/create", createCheckoutSession);
+router.post("/verify", verifyCheckoutSession);
+router.post("/mark-paid", markPaymentAsPaid);
 
 export default router;
