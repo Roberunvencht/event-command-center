@@ -4,4 +4,5 @@ export const QUERY_KEYS = {
   REGISTRATIONS: "registrations",
   DEVICES: "devices",
   RFID_TAGS: "rfid-tags",
+  RACE_RESULTS: "race-results",
 };

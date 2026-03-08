@@ -125,7 +125,7 @@ export default function EventDetail() {
         </TabsContent>
 
         <TabsContent value='leaderboard' className='space-y-4'>
-          <Leaderboard />
+          {eventDetail && <Leaderboard event={eventDetail} />}
         </TabsContent>
 
         <TabsContent value='checkin' className='space-y-4'>
