@@ -26,6 +26,7 @@ import registrationRoutes from "./routes/registration.route";
 import paymentRoutes from "./routes/payment.route";
 import deviceRoutes from "./routes/device.route";
 import telemetryRoutes from "./routes/telemetry.route";
+import rfidTagRoutes from "./routes/rfid-tag.route";
 
 // Routes
 app.use("/api/v1/auth", authRoutes);
@@ -36,6 +37,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/registration", registrationRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/telemetry", telemetryRoutes);
+app.use("/api/v1/rfid-tag", rfidTagRoutes);
 
 // Error handlers
 app.use(notFoundHandler);
