@@ -83,7 +83,17 @@ export const deviceTelemetryController = asyncHandler(async (req, res) => {
  * @route GET /api/v1/device
  */
 export const getDevices = asyncHandler(async (req, res) => {
-	const devices = await DeviceModel.find().populate('registration');
+	const devices = await DeviceModel.find().populate({
+		path: 'registration',
+		populate: [
+			{
+				path: 'user',
+			},
+			{
+				path: 'event',
+			},
+		],
+	});
 
 	res.json(new CustomResponse(true, devices, 'Devices fetched successfully'));
 });

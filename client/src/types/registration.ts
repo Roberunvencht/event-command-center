@@ -1,3 +1,4 @@
+import { Device } from './device';
 import { Event, RaceCategory } from './event';
 import { Payment } from './payment';
 import { User } from './user';
@@ -20,7 +21,7 @@ export type Registration = {
 		medications?: string;
 	};
 	status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-	device?: string;
+	device?: Device;
 	payment?: Payment;
 	registeredAt: Date;
 	createdAt: Date;

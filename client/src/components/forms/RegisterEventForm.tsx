@@ -34,6 +34,15 @@ import {
 import { queryClient } from '@/main';
 import { QUERY_KEYS } from '@/constants';
 
+const emergencyContactRelationships = [
+	'Parent',
+	'Guardian',
+	'Sibling',
+	'Friend',
+	'Spouse',
+	'Other',
+] as const;
+
 type RegisterEventDialogProps = {
 	event: Event;
 };
@@ -49,7 +58,7 @@ export function RegisterEventDialog({ event }: RegisterEventDialogProps) {
 			emergencyContact: {
 				name: '',
 				phone: '',
-				relationship: '',
+				relationship: 'Parent',
 			},
 			medicalInfo: {
 				conditions: '',
@@ -190,6 +199,30 @@ export function RegisterEventDialog({ event }: RegisterEventDialogProps) {
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>Relationship</FormLabel>
+										<Select value={field.value} onValueChange={field.onChange}>
+											<FormControl>
+												<SelectTrigger>
+													<SelectValue />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{emergencyContactRelationships.map((relation) => (
+													<SelectItem key={relation} value={relation}>
+														{relation}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							{/* <FormField
+								control={form.control}
+								name='emergencyContact.relationship'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Relationship</FormLabel>
 										<FormControl>
 											<Input
 												placeholder='Parent, sibling, friend...'
@@ -199,7 +232,7 @@ export function RegisterEventDialog({ event }: RegisterEventDialogProps) {
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+							/> */}
 						</div>
 
 						{/* Medical Info */}

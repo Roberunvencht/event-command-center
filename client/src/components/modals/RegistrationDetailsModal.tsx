@@ -4,14 +4,11 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Eye } from 'lucide-react';
 import { Registration } from '@/types/registration';
 import { format } from 'date-fns';
+import { Label } from '../ui/label';
 
 interface RegistrationDetailsModalProps {
 	registration: Registration;
@@ -34,13 +31,15 @@ export default function RegistrationDetailsModal({
 					</DialogDescription>
 				</DialogHeader>
 
+				<Separator />
+
 				<div className='space-y-6'>
 					{/* User Information */}
-					<Card>
-						<CardHeader className='pb-3'>
-							<CardTitle className='text-Base'>User Information</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
+					<div>
+						<div className='pb-3'>
+							<Label className='text-Base'>User Information</Label>
+						</div>
+						<div className='space-y-4'>
 							<div className='grid grid-cols-2 gap-4'>
 								<div>
 									<label className='text-xs font-semibold text-muted-foreground uppercase'>
@@ -78,17 +77,17 @@ export default function RegistrationDetailsModal({
 									</p>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 
 					<Separator />
 
 					{/* Registration Information */}
-					<Card>
-						<CardHeader className='pb-3'>
-							<CardTitle className='text-base'>Registration Info</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
+					<div>
+						<div className='pb-3'>
+							<Label className='text-base'>Registration Info</Label>
+						</div>
+						<div className='space-y-4'>
 							<div className='grid grid-cols-2 gap-4'>
 								<div>
 									<label className='text-xs font-semibold text-muted-foreground uppercase'>
@@ -126,17 +125,17 @@ export default function RegistrationDetailsModal({
 									</p>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 
 					<Separator />
 
 					{/* Race Category Information */}
-					<Card>
-						<CardHeader className='pb-3'>
-							<CardTitle className='text-base'>Race Category</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
+					<div>
+						<div className='pb-3'>
+							<Label className='text-base'>Race Category</Label>
+						</div>
+						<div className='space-y-4'>
 							<div className='grid grid-cols-2 gap-4'>
 								<div>
 									<label className='text-xs font-semibold text-muted-foreground uppercase'>
@@ -175,17 +174,17 @@ export default function RegistrationDetailsModal({
 									</p>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 
 					<Separator />
 
 					{/* Emergency Contact */}
-					<Card>
-						<CardHeader className='pb-3'>
-							<CardTitle className='text-base'>Emergency Contact</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
+					<div>
+						<div className='pb-3'>
+							<Label className='text-base'>Emergency Contact</Label>
+						</div>
+						<div className='space-y-4'>
 							<div className='grid grid-cols-2 gap-4'>
 								<div className='col-span-2'>
 									<label className='text-xs font-semibold text-muted-foreground uppercase'>
@@ -212,17 +211,17 @@ export default function RegistrationDetailsModal({
 									</p>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 
 					<Separator />
 
 					{/* Medical Information */}
-					<Card>
-						<CardHeader className='pb-3'>
-							<CardTitle className='text-base'>Medical Information</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
+					<div>
+						<div className='pb-3'>
+							<Label className='text-base'>Medical Information</Label>
+						</div>
+						<div className='space-y-4'>
 							<div className='space-y-3'>
 								<div>
 									<label className='text-xs font-semibold text-muted-foreground uppercase'>
@@ -249,8 +248,8 @@ export default function RegistrationDetailsModal({
 									</p>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 				</div>
 			</DialogContent>
 		</Dialog>
