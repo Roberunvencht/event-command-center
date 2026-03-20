@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getSocket, disconnectSocket } from "@/services/socket";
 import { RaceStatsCards } from "@/components/RaceStatsCards.tsx";
 import { RaceProgress } from "@/components/RaceProgress.tsx";
@@ -12,6 +12,18 @@ type Checkpoint = {
   status: "completed" | "approaching" | "pending";
   time: string;
 };
+
+const MAX_HISTORY = 50;
+
+function getTimeLabel() {
+  const now = new Date();
+  return now.toLocaleTimeString("en-US", {
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
 
 export default function RaceParticipation() {
   const { registrationId } = useParams();
@@ -31,6 +43,15 @@ export default function RaceParticipation() {
     warning: null as string | null,
     checkpoints: [] as Checkpoint[],
   });
+
+  const heartRateHistoryRef = useRef<{ time: string; value: number }[]>([]);
+  const emgHistoryRef = useRef<{ time: string; value: number }[]>([]);
+  const [heartRateHistory, setHeartRateHistory] = useState<
+    { time: string; value: number }[]
+  >([]);
+  const [emgHistory, setEmgHistory] = useState<
+    { time: string; value: number }[]
+  >([]);
 
   useEffect(() => {
     const socket = getSocket("race");
@@ -54,12 +75,25 @@ export default function RaceParticipation() {
         heartRate: data.heartRate,
         heartRateZone: data.heartRateZone,
       }));
+      const entry = { time: getTimeLabel(), value: data.heartRate };
+      heartRateHistoryRef.current = [
+        ...heartRateHistoryRef.current,
+        entry,
+      ].slice(-MAX_HISTORY);
+      setHeartRateHistory([...heartRateHistoryRef.current]);
     });
     socket.on("emgUpdate", (data) => {
       setRaceData((prev) => ({
         ...prev,
         emg: data.emg,
       }));
+      const numericValue = parseFloat(data.emg) || 0;
+      const entry = { time: getTimeLabel(), value: numericValue };
+      emgHistoryRef.current = [
+        ...emgHistoryRef.current,
+        entry,
+      ].slice(-MAX_HISTORY);
+      setEmgHistory([...emgHistoryRef.current]);
     });
     socket.on("checkpointUpdate", (data) =>
       setRaceData((prev) => ({
@@ -99,6 +133,8 @@ export default function RaceParticipation() {
         heartRateZone={raceData.heartRateZone}
         emg={raceData.emg}
         warning={raceData.warning}
+        heartRateHistory={heartRateHistory}
+        emgHistory={emgHistory}
       />
       <LiveMap />
       <CheckpointList checkpoints={raceData.checkpoints} />
